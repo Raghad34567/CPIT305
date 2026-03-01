@@ -12,6 +12,7 @@ public class InvitationManagementSystem {
 
     public static void main(String[] args) {
         new LoginFrame().setVisible(true);
+        new RoleSelectionFrame().setVisible(true);
         new DashboardFrame().setVisible(true);
         new CreateEventFrame().setVisible(true);
         new ManageGuestsFrame().setVisible(true);
