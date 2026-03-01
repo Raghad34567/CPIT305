@@ -1,0 +1,8 @@
+com\mycompany\invitationmanagementsystem\LoginFrame.class
+com\mycompany\invitationmanagementsystem\CreateEventFrame.class
+com\mycompany\invitationmanagementsystem\InvitationManagementSystem.class
+com\mycompany\invitationmanagementsystem\RSVPFrame.class
+com\mycompany\invitationmanagementsystem\DashboardFrame.class
+com\mycompany\invitationmanagementsystem\GuestInvitationFrame.class
+com\mycompany\invitationmanagementsystem\ManageGuestsFrame.class
+com\mycompany\invitationmanagementsystem\GuestQRCodeFrame.class
