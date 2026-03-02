@@ -4,44 +4,41 @@
  */
 package com.mycompany.invitationmanagementsystem;
 
-/**
- *
- * @author lama
- */
 import javax.swing.*;
 import java.awt.*;
 
 public class RSVPFrame extends JFrame {
 
-    public RSVPFrame() {
-        setTitle("RSVP Response");
-        setSize(400, 300);
+    public RSVPFrame(){
+
+        setTitle("RSVP");
+        setSize(650,500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(4, 2, 10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+        JPanel main = new JPanel(new GridBagLayout());
+        main.setBackground(UITheme.BACKGROUND);
 
-        JLabel responseLabel = new JLabel("Response:");
-        String[] options = {"Accept", "Decline"};
-        JComboBox<String> responseBox = new JComboBox<>(options);
+        JPanel card = UITheme.createCard(450,300);
 
-        JLabel plusOneLabel = new JLabel("Number of Guests:");
-        JTextField plusOneField = new JTextField();
+        JLabel title = new JLabel("Kindly Confirm Your Attendance", SwingConstants.CENTER);
+        title.setFont(new Font("Serif", Font.BOLD, 24));
+        title.setForeground(UITheme.TEXT);
 
-        JButton submitButton = new JButton("Submit");
-        JButton backButton = new JButton("Back");
+        JComboBox<String> response = new JComboBox<>(new String[]{"Accept with Pleasure","Regretfully Decline"});
 
-        panel.add(responseLabel);
-        panel.add(responseBox);
-        panel.add(plusOneLabel);
-        panel.add(plusOneField);
-        panel.add(submitButton);
-        panel.add(backButton);
+        JTextField guests = new JTextField();
+        guests.setBorder(BorderFactory.createTitledBorder("Number of Guests"));
 
-        add(panel);
+        JButton submit = new JButton("Submit Response");
+        UITheme.styleButton(submit);
+
+        card.add(title);
+        card.add(response);
+        card.add(guests);
+        card.add(submit);
+
+        main.add(card);
+        add(main);
     }
-
-   
 }

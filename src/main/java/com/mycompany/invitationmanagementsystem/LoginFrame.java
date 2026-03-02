@@ -5,52 +5,41 @@ import java.awt.*;
 
 public class LoginFrame extends JFrame {
 
-    private JTextField userField;
-    private JPasswordField passField;
-    private JButton loginButton;
-    private JButton backButton;
+    public LoginFrame(){
 
-    public LoginFrame() {
-        setTitle("Login");
-        setSize(450, 350);
+        setTitle("Organizer Login");
+        setSize(700,500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel loginPanel = new JPanel(new GridLayout(4, 2, 10, 10));
-        loginPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+        JPanel main = new JPanel(new GridBagLayout());
+        main.setBackground(UITheme.BACKGROUND);
 
-        JLabel userLabel = new JLabel("Username:");
-        userField = new JTextField();
+        JPanel card = UITheme.createCard(450,350);
 
-        JLabel passLabel = new JLabel("Password:");
-        passField = new JPasswordField();
+        JLabel title = new JLabel("Organizer Login", SwingConstants.CENTER);
+        title.setFont(new Font("Serif", Font.BOLD, 26));
+        title.setForeground(UITheme.TEXT);
 
-        loginButton = new JButton("Login");
-        backButton = new JButton("Back");
+        JTextField username = new JTextField();
+        username.setBorder(BorderFactory.createTitledBorder("Username"));
 
-        loginPanel.add(userLabel);
-        loginPanel.add(userField);
-        loginPanel.add(passLabel);
-        loginPanel.add(passField);
-        loginPanel.add(loginButton);
-        loginPanel.add(backButton);
+        JPasswordField password = new JPasswordField();
+        password.setBorder(BorderFactory.createTitledBorder("Password"));
 
-        add(loginPanel);
+        JButton login = new JButton("Login");
+        UITheme.styleButton(login);
 
-        // Login button → placeholder
-        loginButton.addActionListener(e ->
-                JOptionPane.showMessageDialog(this,
-                        "Login successful! (Dashboard to be implemented in Phase 2)",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE)
-        );
+        JButton back = new JButton("Back");
+        UITheme.styleButton(back);
 
-        // Back button → placeholder
-        backButton.addActionListener(e ->
-                JOptionPane.showMessageDialog(this,
-                        "Back button functionality will be added in Phase 2.",
-                        "Info",
-                        JOptionPane.INFORMATION_MESSAGE)
-        );
+        card.add(title);
+        card.add(username);
+        card.add(password);
+        card.add(login);
+        card.add(back);
+
+        main.add(card);
+        add(main);
     }
 }

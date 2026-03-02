@@ -4,39 +4,79 @@
  */
 package com.mycompany.invitationmanagementsystem;
 
-/**
- *
- * @author lama
- */
 import javax.swing.*;
 import java.awt.*;
 
 public class DashboardFrame extends JFrame {
 
     public DashboardFrame() {
-        setTitle("Dashboard - Invitation Management System");
-        setSize(500, 400);
+
+        setTitle("Wedding Dashboard");
+        setSize(950, 650);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(6, 1, 15, 15));
-        panel.setBorder(BorderFactory.createEmptyBorder(30, 100, 30, 100));
+        JPanel main = new JPanel(new BorderLayout());
+        main.setBackground(UITheme.BACKGROUND);
 
-        JButton createEventBtn = new JButton("Create Event");
-        JButton manageGuestsBtn = new JButton("Manage Guests");
-        JButton sendInvBtn = new JButton("Send Invitations");
-        JButton viewResponsesBtn = new JButton("View Responses");
-        JButton reportsBtn = new JButton("Reports");
-        JButton logoutBtn = new JButton("Logout");
+        // ===== Header =====
+        JLabel header = new JLabel("Wedding Management Dashboard", SwingConstants.CENTER);
+        header.setFont(new Font("Serif", Font.BOLD, 30));
+        header.setForeground(UITheme.TEXT);
+        header.setBorder(BorderFactory.createEmptyBorder(30, 0, 30, 0));
 
-        panel.add(createEventBtn);
-        panel.add(manageGuestsBtn);
-        panel.add(sendInvBtn);
-        panel.add(viewResponsesBtn);
-        panel.add(reportsBtn);
-        panel.add(logoutBtn);
+        // ===== Buttons Grid =====
+        JPanel buttons = new JPanel(new GridLayout(2, 3, 40, 40));
+        buttons.setBackground(UITheme.BACKGROUND);
+        buttons.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
-        add(panel);
+        // Create buttons
+        JButton createEvent = new JButton("Create Event");
+        JButton manageGuests = new JButton("Manage Guests");
+        JButton sendInvitations = new JButton("Send Invitation");
+        JButton viewResponses = new JButton("View Response");
+        JButton reports = new JButton("Reports");
+        JButton guestCheckIn = new JButton("Guest Check-In");
+
+        // Style buttons
+        UITheme.styleButton(createEvent);
+        UITheme.styleButton(manageGuests);
+        UITheme.styleButton(sendInvitations);
+        UITheme.styleButton(viewResponses);
+        UITheme.styleButton(reports);
+        UITheme.styleButton(guestCheckIn);
+
+        // Optional: enforce square-ish size
+        Dimension btnSize = new Dimension(200, 200);
+        createEvent.setPreferredSize(btnSize);
+        manageGuests.setPreferredSize(btnSize);
+        sendInvitations.setPreferredSize(btnSize);
+        viewResponses.setPreferredSize(btnSize);
+        reports.setPreferredSize(btnSize);
+        guestCheckIn.setPreferredSize(btnSize);
+
+        // Add buttons to grid
+        buttons.add(createEvent);
+        buttons.add(manageGuests);
+        buttons.add(sendInvitations);
+        buttons.add(viewResponses);
+        buttons.add(reports);
+        buttons.add(guestCheckIn);
+
+        // ===== Logout button =====
+        JButton logout = new JButton("Logout");
+        UITheme.styleButton(logout);
+        logout.setPreferredSize(new Dimension(120, 40));
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBackground(UITheme.BACKGROUND);
+        bottomPanel.add(logout);
+
+        // ===== Add everything to main panel =====
+        main.add(header, BorderLayout.NORTH);
+        main.add(buttons, BorderLayout.CENTER);
+        main.add(bottomPanel, BorderLayout.SOUTH);
+
+        add(main);
     }
 }

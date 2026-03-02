@@ -7,11 +7,11 @@ package com.mycompany.invitationmanagementsystem;
 import javax.swing.*;
 import java.awt.*;
 
-public class ManageGuestsFrame extends JFrame {
+public class ResponsesFrame extends JFrame {
 
-    public ManageGuestsFrame(){
+    public ResponsesFrame(){
 
-        setTitle("Manage Guests");
+        setTitle("Guest Responses");
         setSize(900,600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -19,39 +19,23 @@ public class ManageGuestsFrame extends JFrame {
         JPanel main = new JPanel(new BorderLayout());
         main.setBackground(UITheme.BACKGROUND);
 
-        JLabel title = new JLabel("Wedding Guest List", SwingConstants.CENTER);
+        JLabel title = new JLabel("RSVP Responses", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 28));
         title.setForeground(UITheme.TEXT);
         title.setBorder(BorderFactory.createEmptyBorder(20,0,20,0));
 
         JTable table = new JTable(
                 new Object[][]{},
-                new String[]{"Name","Phone",}
+                new String[]{"Guest Name","Response","Guests Count"}
         );
 
         table.setFont(new Font("Serif", Font.PLAIN, 16));
-        table.setRowHeight(25);
+        table.setRowHeight(28);
 
         JScrollPane scroll = new JScrollPane(table);
 
-        JPanel buttons = new JPanel();
-        buttons.setBackground(UITheme.BACKGROUND);
-
-        JButton add = new JButton("Add Guest");
-        JButton edit = new JButton("Edit");
-        JButton delete = new JButton("Remove");
-
-        UITheme.styleButton(add);
-        UITheme.styleButton(edit);
-        UITheme.styleButton(delete);
-
-        buttons.add(add);
-        buttons.add(edit);
-        buttons.add(delete);
-
         main.add(title, BorderLayout.NORTH);
         main.add(scroll, BorderLayout.CENTER);
-        main.add(buttons, BorderLayout.SOUTH);
 
         add(main);
     }

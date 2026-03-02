@@ -4,51 +4,50 @@
  */
 package com.mycompany.invitationmanagementsystem;
 
-/**
- *
- * @author lama
- */
 import javax.swing.*;
 import java.awt.*;
 
 public class CreateEventFrame extends JFrame {
 
-    public CreateEventFrame() {
-        setTitle("Create Event");
-        setSize(450, 350);
+    public CreateEventFrame(){
+
+        setTitle("Create Wedding Event");
+        setSize(750,550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(5, 2, 10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+        JPanel main = new JPanel(new GridBagLayout());
+        main.setBackground(UITheme.BACKGROUND);
 
-        JLabel titleLabel = new JLabel("Event Title:");
-        JTextField titleField = new JTextField();
+        JPanel card = UITheme.createCard(500,400);
 
-        JLabel dateLabel = new JLabel("Date:");
-        JTextField dateField = new JTextField();
+        JLabel title = new JLabel("Create New Wedding Event", SwingConstants.CENTER);
+        title.setFont(new Font("Serif", Font.BOLD, 26));
+        title.setForeground(UITheme.TEXT);
 
-        JLabel locationLabel = new JLabel("Location:");
-        JTextField locationField = new JTextField();
+        JTextField name = new JTextField();
+        name.setBorder(BorderFactory.createTitledBorder("Event Name"));
 
-        JLabel capacityLabel = new JLabel("Capacity:");
-        JTextField capacityField = new JTextField();
+        JTextField date = new JTextField();
+        date.setBorder(BorderFactory.createTitledBorder("Date"));
 
-        JButton saveBtn = new JButton("Save");
-        JButton backBtn = new JButton("Back");
+        JTextField location = new JTextField();
+        location.setBorder(BorderFactory.createTitledBorder("Location"));
 
-        panel.add(titleLabel);
-        panel.add(titleField);
-        panel.add(dateLabel);
-        panel.add(dateField);
-        panel.add(locationLabel);
-        panel.add(locationField);
-        panel.add(capacityLabel);
-        panel.add(capacityField);
-        panel.add(saveBtn);
-        panel.add(backBtn);
+        JTextField capacity = new JTextField();
+        capacity.setBorder(BorderFactory.createTitledBorder("Capacity"));
 
-        add(panel);
+        JButton save = new JButton("Save Event");
+        UITheme.styleButton(save);
+
+        card.add(title);
+        card.add(name);
+        card.add(date);
+        card.add(location);
+        card.add(capacity);
+        card.add(save);
+
+        main.add(card);
+        add(main);
     }
 }

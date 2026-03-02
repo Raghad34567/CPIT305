@@ -19,5 +19,10 @@ public class InvitationManagementSystem {
         new GuestInvitationFrame().setVisible(true);
         new RSVPFrame().setVisible(true);
         new GuestQRCodeFrame().setVisible(true);
+        new CheckInFrame().setVisible(true);
+        new GuestLinkFrame().setVisible(true);
+        new ReportsFrame().setVisible(true); 
+        new ResponsesFrame().setVisible(true);
+        new InvitationLinkFrame().setVisible(true);
     }
 }

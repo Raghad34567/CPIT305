@@ -4,46 +4,61 @@
  */
 package com.mycompany.invitationmanagementsystem;
 
-/**
- *
- * @author lama
- */
 import javax.swing.*;
 import java.awt.*;
 
 public class GuestInvitationFrame extends JFrame {
 
-    public GuestInvitationFrame() {
-        setTitle("Event Invitation");
-        setSize(500, 400);
+    public GuestInvitationFrame(){
+
+        setTitle("Wedding Invitation");
+        setSize(800,600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        JPanel main = new JPanel(new GridBagLayout());
+        main.setBackground(UITheme.BACKGROUND);
 
-        JLabel titleLabel = new JLabel("You're Invited!", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 22));
+        JPanel card = UITheme.createCard(600,450);
+        card.setLayout(new BorderLayout(20,20));
 
-        JTextArea invitationDetails = new JTextArea();
-        invitationDetails.setText(
-                "Event Name: Graduation Party\n\n" +
-                "Date: 20 May 2026\n" +
-                "Location: Jeddah Hall\n\n" +
-                "We are delighted to invite you to our special event!"
+        // ===== TITLE =====
+        JLabel title = new JLabel("You Are Cordially Invited", SwingConstants.CENTER);
+        title.setFont(new Font("Serif", Font.BOLD, 30));
+        title.setForeground(UITheme.PRIMARY);
+
+        // ===== INVITATION TEXT =====
+        JTextArea details = new JTextArea(
+                "Together with their families\n\n"
+                        + "Bride & Groom\n\n"
+                        + "request the pleasure of your company\n"
+                        + "at their wedding celebration\n\n"
+                        + "Date: 20 May 2026\n"
+                        + "Location: Grand Royal Hall\n\n"
+                        + "Your presence will make our day truly special."
         );
-        invitationDetails.setEditable(false);
-        invitationDetails.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        JButton rsvpButton = new JButton("RSVP");
+        details.setFont(new Font("Serif", Font.PLAIN, 20));
+        details.setEditable(false);
+        details.setOpaque(false);
+        details.setLineWrap(true);
+        details.setWrapStyleWord(true);
+        details.setForeground(UITheme.TEXT);
 
-        panel.add(titleLabel, BorderLayout.NORTH);
-        panel.add(invitationDetails, BorderLayout.CENTER);
-        panel.add(rsvpButton, BorderLayout.SOUTH);
+        // ===== SMALL RSVP BUTTON =====
+        JButton rsvp = new JButton("RSVP");
+        rsvp.setPreferredSize(new Dimension(120,40)); // smaller size
+        UITheme.styleButton(rsvp);
 
-        add(panel);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(UITheme.CARD);
+        buttonPanel.add(rsvp);
+
+        card.add(title, BorderLayout.NORTH);
+        card.add(details, BorderLayout.CENTER);
+        card.add(buttonPanel, BorderLayout.SOUTH);
+
+        main.add(card);
+        add(main);
     }
-
-   
 }
