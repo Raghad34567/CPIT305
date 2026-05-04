@@ -5,17 +5,17 @@ import java.awt.*;
 
 public class LoginFrame extends JFrame {
 
-    public LoginFrame(){
+    public LoginFrame() {
 
         setTitle("Organizer Login");
-        setSize(700,500);
+        setSize(700, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel main = new JPanel(new GridBagLayout());
         main.setBackground(UITheme.BACKGROUND);
 
-        JPanel card = UITheme.createCard(450,350);
+        JPanel card = UITheme.createCard(450, 350);
 
         JLabel title = new JLabel("Organizer Login", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 26));
@@ -41,5 +41,33 @@ public class LoginFrame extends JFrame {
 
         main.add(card);
         add(main);
+
+        login.addActionListener(e -> {
+            String user = username.getText();
+            String pass = new String(password.getPassword());
+
+            if (user.isEmpty() || pass.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Please enter username and password",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } else if (user.equals("admin") && pass.equals("1234")) {
+                JOptionPane.showMessageDialog(this,
+                        "Login Successful!");
+
+                new DashboardFrame().setVisible(true);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Invalid credentials",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        back.addActionListener(e -> {
+            new RoleSelectionFrame().setVisible(true);
+            dispose();
+        });
     }
 }

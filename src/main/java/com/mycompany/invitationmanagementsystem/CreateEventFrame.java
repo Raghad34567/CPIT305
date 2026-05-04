@@ -1,53 +1,125 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.invitationmanagementsystem;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.io.FileWriter;
 
 public class CreateEventFrame extends JFrame {
 
-    public CreateEventFrame(){
+    DashboardFrame dashboard;
+
+    public CreateEventFrame(DashboardFrame dashboard) {
+        this.dashboard = dashboard;
 
         setTitle("Create Wedding Event");
-        setSize(750,550);
+        setSize(750, 550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel main = new JPanel(new GridBagLayout());
         main.setBackground(UITheme.BACKGROUND);
 
-        JPanel card = UITheme.createCard(500,400);
+        JPanel card = UITheme.createCard(520, 420);
+        card.setLayout(new BorderLayout(1, 1));
 
         JLabel title = new JLabel("Create New Wedding Event", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 26));
         title.setForeground(UITheme.TEXT);
 
-        JTextField name = new JTextField();
-        name.setBorder(BorderFactory.createTitledBorder("Event Name"));
+        JPanel fields = new JPanel(new GridLayout(4, 1, 15, 15));
+        fields.setBackground(UITheme.CARD);
+        fields.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JTextField date = new JTextField();
-        date.setBorder(BorderFactory.createTitledBorder("Date"));
+        JTextField name = createField("Event Name");
+        JTextField date = createField("Date");
+        JTextField location = createField("Location");
+        JTextField capacity = createField("Capacity");
 
-        JTextField location = new JTextField();
-        location.setBorder(BorderFactory.createTitledBorder("Location"));
-
-        JTextField capacity = new JTextField();
-        capacity.setBorder(BorderFactory.createTitledBorder("Capacity"));
+        fields.add(name);
+        fields.add(date);
+        fields.add(location);
+        fields.add(capacity);
 
         JButton save = new JButton("Save Event");
-        UITheme.styleButton(save);
+        JButton back = new JButton("Back");
 
-        card.add(title);
-        card.add(name);
-        card.add(date);
-        card.add(location);
-        card.add(capacity);
-        card.add(save);
+        UITheme.styleButton(save);
+        UITheme.styleButton(back);
+
+        JPanel buttons = new JPanel();
+        buttons.setBackground(UITheme.CARD);
+        buttons.add(save);
+        buttons.add(back);
+
+        card.add(title, BorderLayout.NORTH);
+        card.add(fields, BorderLayout.CENTER);
+        card.add(buttons, BorderLayout.SOUTH);
 
         main.add(card);
         add(main);
+
+        // ================= SAVE =================
+        save.addActionListener(e -> {
+
+            try {
+                String eventName = name.getText().trim();
+                String eventDate = date.getText().trim();
+                String eventLocation = location.getText().trim();
+                String eventCapacity = capacity.getText().trim();
+
+                if (eventName.isEmpty() || eventDate.isEmpty()
+                        || eventLocation.isEmpty() || eventCapacity.isEmpty()) {
+
+                    JOptionPane.showMessageDialog(this, "Fill all fields");
+                    return;
+                }
+
+                Connection conn = DBConnection.connect();
+
+                PreparedStatement ps = conn.prepareStatement(
+                        "INSERT INTO events(name, date, location, capacity) VALUES (?,?,?,?)"
+                );
+
+                ps.setString(1, eventName);
+                ps.setString(2, eventDate);
+                ps.setString(3, eventLocation);
+                ps.setInt(4, Integer.parseInt(eventCapacity));
+
+                ps.executeUpdate();
+
+                // ================= FILE SAVE =================
+                FileWriter fw = new FileWriter("events.txt", true);
+                fw.write(eventName + "," + eventDate + "," + eventLocation + "," + eventCapacity + "\n");
+                fw.close();
+
+                JOptionPane.showMessageDialog(this, "Event Created & Saved!");
+
+                name.setText("");
+                date.setText("");
+                location.setText("");
+                capacity.setText("");
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Capacity must be a number");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error!");
+            }
+        });
+
+        // ================= BACK =================
+        back.addActionListener(e -> {
+            dashboard.setVisible(true);
+            dispose();
+        });
+    }
+
+    private JTextField createField(String title) {
+        JTextField field = new JTextField();
+        field.setFont(new Font("Serif", Font.PLAIN, 18));
+        field.setBorder(BorderFactory.createTitledBorder(title));
+        return field;
     }
 }

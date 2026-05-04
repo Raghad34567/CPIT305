@@ -1,50 +1,104 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.invitationmanagementsystem;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class GuestLinkFrame extends JFrame {
 
-    public GuestLinkFrame(){
+    DashboardFrame dashboard;
 
-        setTitle("Generate Guest Invitation Link");
-        setSize(800,550);
+    public GuestLinkFrame(DashboardFrame dashboard) {
+
+        this.dashboard = dashboard;
+
+        setTitle("Generate Link");
+        setSize(700, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel main = new JPanel(new GridBagLayout());
         main.setBackground(UITheme.BACKGROUND);
 
-        JPanel card = UITheme.createCard(550,350);
-        card.setLayout(new BorderLayout(20,20));
+        JPanel card = UITheme.createCard(450, 300);
+        card.setLayout(new GridLayout(4, 1, 10, 10));
 
-        JLabel title = new JLabel("Generate Personalized Invitation Link", SwingConstants.CENTER);
-        title.setFont(new Font("Serif", Font.BOLD, 24));
-        title.setForeground(UITheme.TEXT);
+        JTextField name = new JTextField();
+        name.setBorder(BorderFactory.createTitledBorder("Guest Name"));
+        name.setFont(new Font("Serif", Font.PLAIN, 18));
 
-        JTextField guestName = new JTextField();
-        guestName.setBorder(BorderFactory.createTitledBorder("Guest Name"));
+        JTextField link = new JTextField();
+        link.setEditable(false);
+        link.setFont(new Font("Serif", Font.PLAIN, 18));
 
-        JTextField linkField = new JTextField("Generated link will appear here...");
-        linkField.setEditable(false);
+        JButton generate = new JButton("Generate");
+        JButton back = new JButton("Back");
 
-        JButton generateBtn = new JButton("Generate Link");
-        UITheme.styleButton(generateBtn);
+        UITheme.styleButton(generate);
+        UITheme.styleButton(back);
 
-        JPanel centerPanel = new JPanel(new GridLayout(2,1,15,15));
-        centerPanel.setBackground(UITheme.CARD);
-        centerPanel.add(guestName);
-        centerPanel.add(linkField);
-
-        card.add(title, BorderLayout.NORTH);
-        card.add(centerPanel, BorderLayout.CENTER);
-        card.add(generateBtn, BorderLayout.SOUTH);
+        card.add(name);
+        card.add(link);
+        card.add(generate);
+        card.add(back);
 
         main.add(card);
         add(main);
+
+        // ================= GENERATE + NETWORK (GET) =================
+        generate.addActionListener(e -> {
+
+            String guestName = name.getText().trim();
+
+            if (guestName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Enter guest name");
+                return;
+            }
+
+            // show link immediately (UI)
+            String inviteLink = "www.invite.com/" + guestName;
+            link.setText(inviteLink);
+
+            // run networking in background
+            new Thread(() -> {
+                try {
+
+                    String encodedName = URLEncoder.encode(guestName, StandardCharsets.UTF_8);
+
+                    String urlStr = "https://postman-echo.com/get?guest=" + encodedName;
+
+                    URL url = new URL(urlStr);
+                    URLConnection conn = url.openConnection();
+
+                    conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+                    Scanner in = new Scanner(conn.getInputStream());
+
+                    while (in.hasNextLine()) {
+                        System.out.println(in.nextLine()); // print server response
+                    }
+
+                    // show success 
+                    SwingUtilities.invokeLater(()
+                            -> JOptionPane.showMessageDialog(this, "Invitation Generated & Sent!")
+                    );
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+
+                    SwingUtilities.invokeLater(()
+                            -> JOptionPane.showMessageDialog(this, "Network Error!")
+                    );
+                }
+            }).start();
+        });
+
+        // ================= BACK =================
+        back.addActionListener(e -> {
+            dashboard.setVisible(true);
+            dispose();
+        });
     }
 }

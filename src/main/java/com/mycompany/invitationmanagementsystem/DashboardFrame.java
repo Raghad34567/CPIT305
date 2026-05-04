@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.invitationmanagementsystem;
 
 import javax.swing.*;
@@ -30,7 +26,6 @@ public class DashboardFrame extends JFrame {
         buttons.setBackground(UITheme.BACKGROUND);
         buttons.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
-        // Create buttons
         JButton createEvent = new JButton("Create Event");
         JButton manageGuests = new JButton("Manage Guests");
         JButton sendInvitations = new JButton("Send Invitation");
@@ -38,7 +33,6 @@ public class DashboardFrame extends JFrame {
         JButton reports = new JButton("Reports");
         JButton guestCheckIn = new JButton("Guest Check-In");
 
-        // Style buttons
         UITheme.styleButton(createEvent);
         UITheme.styleButton(manageGuests);
         UITheme.styleButton(sendInvitations);
@@ -46,7 +40,6 @@ public class DashboardFrame extends JFrame {
         UITheme.styleButton(reports);
         UITheme.styleButton(guestCheckIn);
 
-        // Optional: enforce square-ish size
         Dimension btnSize = new Dimension(200, 200);
         createEvent.setPreferredSize(btnSize);
         manageGuests.setPreferredSize(btnSize);
@@ -55,7 +48,6 @@ public class DashboardFrame extends JFrame {
         reports.setPreferredSize(btnSize);
         guestCheckIn.setPreferredSize(btnSize);
 
-        // Add buttons to grid
         buttons.add(createEvent);
         buttons.add(manageGuests);
         buttons.add(sendInvitations);
@@ -72,11 +64,46 @@ public class DashboardFrame extends JFrame {
         bottomPanel.setBackground(UITheme.BACKGROUND);
         bottomPanel.add(logout);
 
-        // ===== Add everything to main panel =====
         main.add(header, BorderLayout.NORTH);
         main.add(buttons, BorderLayout.CENTER);
         main.add(bottomPanel, BorderLayout.SOUTH);
 
         add(main);
+
+        createEvent.addActionListener(e -> {
+            new CreateEventFrame(this).setVisible(true);
+            setVisible(false);
+        });
+
+        manageGuests.addActionListener(e -> {
+            new ManageGuestsFrame(this).setVisible(true);
+            setVisible(false);
+        });
+
+        sendInvitations.addActionListener(e -> {
+            new GuestLinkFrame(this).setVisible(true);
+            setVisible(false);
+        });
+
+        viewResponses.addActionListener(e -> {
+            new ResponsesFrame(this).setVisible(true);
+            setVisible(false);
+        });
+
+        reports.addActionListener(e -> {
+            new ReportsFrame(this).setVisible(true);
+            setVisible(false);
+        });
+
+        guestCheckIn.addActionListener(e -> {
+            new CheckInFrame(this).setVisible(true);
+            setVisible(false);
+        });
+
+        logout.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Logged out successfully");
+            new RoleSelectionFrame().setVisible(true);
+            dispose();
+        });
     }
 }

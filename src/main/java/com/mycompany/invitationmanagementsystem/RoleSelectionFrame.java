@@ -5,17 +5,17 @@ import java.awt.*;
 
 public class RoleSelectionFrame extends JFrame {
 
-    public RoleSelectionFrame(){
+    public RoleSelectionFrame() {
 
         setTitle("Welcome");
-        setSize(700,500);
+        setSize(700, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel main = new JPanel(new GridBagLayout());
         main.setBackground(UITheme.BACKGROUND);
 
-        JPanel card = UITheme.createCard(450,300);
+        JPanel card = UITheme.createCard(450, 300);
 
         JLabel title = new JLabel("Select Your Role", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 28));
@@ -33,5 +33,15 @@ public class RoleSelectionFrame extends JFrame {
 
         main.add(card);
         add(main);
+
+        organizer.addActionListener(e -> {
+            new LoginFrame().setVisible(true);
+            dispose();
+        });
+
+        guest.addActionListener(e -> {
+            new InvitationLinkFrame().setVisible(true);
+            dispose();
+        });
     }
 }
