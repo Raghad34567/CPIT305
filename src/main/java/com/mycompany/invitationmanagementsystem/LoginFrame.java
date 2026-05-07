@@ -6,14 +6,13 @@ import java.awt.*;
 public class LoginFrame extends JFrame {
 
     public LoginFrame() {
-
         setTitle("Organizer Login");
         setSize(700, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel main = new JPanel(new GridBagLayout());
-        main.setBackground(UITheme.BACKGROUND);
+        JPanel main = UITheme.createRoseBackground();
+        main.setLayout(new GridBagLayout());
 
         JPanel card = UITheme.createCard(450, 350);
 
@@ -22,15 +21,20 @@ public class LoginFrame extends JFrame {
         title.setForeground(UITheme.TEXT);
 
         JTextField username = new JTextField();
-        username.setBorder(BorderFactory.createTitledBorder("Username"));
+        username.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(new Color(180, 100, 130), 1),
+            "Username"));
+        username.setFont(new Font("Serif", Font.PLAIN, 16));
 
         JPasswordField password = new JPasswordField();
-        password.setBorder(BorderFactory.createTitledBorder("Password"));
+        password.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(new Color(180, 100, 130), 1),
+            "Password"));
+        password.setFont(new Font("Serif", Font.PLAIN, 16));
 
         JButton login = new JButton("Login");
+        JButton back  = new JButton("Back");
         UITheme.styleButton(login);
-
-        JButton back = new JButton("Back");
         UITheme.styleButton(back);
 
         card.add(title);
@@ -45,23 +49,18 @@ public class LoginFrame extends JFrame {
         login.addActionListener(e -> {
             String user = username.getText();
             String pass = new String(password.getPassword());
-
             if (user.isEmpty() || pass.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
-                        "Please enter username and password",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                    "Please enter username and password", "Error",
+                    JOptionPane.ERROR_MESSAGE);
             } else if (user.equals("admin") && pass.equals("1234")) {
-                JOptionPane.showMessageDialog(this,
-                        "Login Successful!");
-
+                JOptionPane.showMessageDialog(this, "Login Successful!");
                 new DashboardFrame().setVisible(true);
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this,
-                        "Invalid credentials",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                    "Invalid credentials", "Error",
+                    JOptionPane.ERROR_MESSAGE);
             }
         });
 

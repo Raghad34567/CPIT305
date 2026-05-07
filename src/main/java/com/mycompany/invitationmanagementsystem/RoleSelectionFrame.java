@@ -6,14 +6,13 @@ import java.awt.*;
 public class RoleSelectionFrame extends JFrame {
 
     public RoleSelectionFrame() {
-
         setTitle("Welcome");
         setSize(700, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel main = new JPanel(new GridBagLayout());
-        main.setBackground(UITheme.BACKGROUND);
+        JPanel main = UITheme.createRoseBackground();
+        main.setLayout(new GridBagLayout());
 
         JPanel card = UITheme.createCard(450, 300);
 
@@ -22,8 +21,7 @@ public class RoleSelectionFrame extends JFrame {
         title.setForeground(UITheme.TEXT);
 
         JButton organizer = new JButton("Organizer");
-        JButton guest = new JButton("Guest");
-
+        JButton guest     = new JButton("Guest");
         UITheme.styleButton(organizer);
         UITheme.styleButton(guest);
 
@@ -38,7 +36,6 @@ public class RoleSelectionFrame extends JFrame {
             new LoginFrame().setVisible(true);
             dispose();
         });
-
         guest.addActionListener(e -> {
             new InvitationLinkFrame().setVisible(true);
             dispose();

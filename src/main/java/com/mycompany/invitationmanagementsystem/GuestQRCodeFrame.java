@@ -6,28 +6,39 @@ import java.awt.*;
 public class GuestQRCodeFrame extends JFrame {
 
     public GuestQRCodeFrame() {
-
         setTitle("Your Entry Pass");
         setSize(500, 450);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JPanel bg = new JPanel(new BorderLayout());
-        bg.setBackground(UITheme.BACKGROUND);
+        JPanel bg = UITheme.createRoseBackground();
+        bg.setLayout(new BorderLayout());
 
         // ===== Title =====
-        JLabel title = new JLabel("🎟 Your Digital Entry Pass", SwingConstants.CENTER);
+        JLabel title = new JLabel("✦  Your Digital Entry Pass  ✦", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 28));
         title.setForeground(UITheme.PRIMARY);
         title.setBorder(BorderFactory.createEmptyBorder(30, 10, 20, 10));
 
         // ===== QR Card =====
-        JPanel card = new JPanel();
-        card.setBackground(Color.WHITE);
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(UITheme.PRIMARY, 2),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
+        JPanel card = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                    RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(0, 0, 0, 30));
+                g2.fillRoundRect(4, 6, getWidth() - 6, getHeight() - 6, 26, 26);
+                g2.setColor(Color.WHITE);
+                g2.fillRoundRect(0, 0, getWidth() - 4, getHeight() - 4, 24, 24);
+                g2.setColor(new Color(200, 150, 160));
+                g2.setStroke(new BasicStroke(1.5f));
+                g2.drawRoundRect(0, 0, getWidth() - 5, getHeight() - 5, 24, 24);
+                g2.dispose();
+            }
+        };
+        card.setOpaque(false);
+        card.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         card.setLayout(new BorderLayout(10, 10));
 
         JLabel qrPlaceholder = new JLabel("QR CODE", SwingConstants.CENTER);
@@ -37,9 +48,8 @@ public class GuestQRCodeFrame extends JFrame {
         qrPlaceholder.setPreferredSize(new Dimension(250, 250));
 
         JLabel instruction = new JLabel(
-                "Please present this QR at the entrance",
-                SwingConstants.CENTER
-        );
+            "Please present this QR at the entrance",
+            SwingConstants.CENTER);
         instruction.setFont(new Font("SansSerif", Font.PLAIN, 16));
         instruction.setForeground(UITheme.TEXT);
 
@@ -51,13 +61,12 @@ public class GuestQRCodeFrame extends JFrame {
         UITheme.styleButton(close);
 
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(UITheme.BACKGROUND);
+        bottomPanel.setOpaque(false);
         bottomPanel.add(close);
 
         bg.add(title, BorderLayout.NORTH);
         bg.add(card, BorderLayout.CENTER);
         bg.add(bottomPanel, BorderLayout.SOUTH);
-
         add(bg);
 
         close.addActionListener(e -> {

@@ -9,14 +9,13 @@ public class CheckInFrame extends JFrame {
 
     public CheckInFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
-
         setTitle("Wedding Guest Check-In");
         setSize(800, 550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JPanel main = new JPanel(new GridBagLayout());
-        main.setBackground(UITheme.BACKGROUND);
+        JPanel main = UITheme.createRoseBackground();
+        main.setLayout(new GridBagLayout());
 
         JPanel card = UITheme.createCard(500, 350);
         card.setLayout(new BorderLayout(20, 20));
@@ -26,17 +25,18 @@ public class CheckInFrame extends JFrame {
         title.setForeground(UITheme.PRIMARY);
 
         JTextField qrField = new JTextField();
-        qrField.setBorder(BorderFactory.createTitledBorder("Scan or Enter QR Code"));
+        qrField.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(new Color(180, 100, 130), 1),
+            "Scan or Enter QR Code"));
         qrField.setFont(new Font("Serif", Font.PLAIN, 18));
 
         JButton checkInBtn = new JButton("Confirm Check-In");
+        JButton back       = new JButton("Back");
         UITheme.styleButton(checkInBtn);
-
-        JButton back = new JButton("Back");
         UITheme.styleButton(back);
 
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(UITheme.CARD);
+        bottomPanel.setOpaque(false);
         bottomPanel.add(checkInBtn);
         bottomPanel.add(back);
 
@@ -49,19 +49,15 @@ public class CheckInFrame extends JFrame {
 
         checkInBtn.addActionListener(e -> {
             String code = qrField.getText();
-
             if (code.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
-                        "Please enter or scan a QR code",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                    "Please enter or scan a QR code", "Error",
+                    JOptionPane.ERROR_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this,
-                        "Guest Checked In Successfully!",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                qrField.setText(""); // clear field after check-in
+                    "Guest Checked In Successfully!", "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+                qrField.setText("");
             }
         });
 
