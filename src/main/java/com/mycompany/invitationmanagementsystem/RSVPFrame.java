@@ -78,9 +78,10 @@ public class RSVPFrame extends JFrame {
         main.add(card);
         add(main);
 
+        // ✅ FIX 1: تم تصحيح الشرط ليتطابق مع القيمة الفعلية في ComboBox
         response.addActionListener(e -> {
             if (response.getSelectedItem() != null &&
-                response.getSelectedItem().toString().equals("Declined")) {
+                response.getSelectedItem().toString().equals("Regretfully Decline")) {
                 guests.setText("0");
                 guests.setEnabled(false);
             } else {
@@ -93,7 +94,9 @@ public class RSVPFrame extends JFrame {
             if (response.getSelectedItem() == null) return;
             String status     = response.getSelectedItem().toString();
             int    guestCount = 0;
-            if (status.equals("Accepted")) {
+
+            // ✅ FIX 2: تم تصحيح الشرط ليتطابق مع القيمة الفعلية في ComboBox
+            if (status.equals("Accept with pleasure")) {
                 try {
                     guestCount = Integer.parseInt(guests.getText().trim());
                 } catch (Exception ex) {
@@ -101,6 +104,7 @@ public class RSVPFrame extends JFrame {
                     return;
                 }
             }
+
             try {
                 Connection conn = DBConnection.connect();
                 PreparedStatement ps = conn.prepareStatement(
@@ -110,10 +114,22 @@ public class RSVPFrame extends JFrame {
                 ps.setInt(2, guestCount);
                 ps.setString(3, guestEmail);
                 int rows = ps.executeUpdate();
+
                 if (rows > 0) {
                     String eventName     = "Event";
                     String eventDate     = "Date";
                     String eventLocation = "Location";
+                    String guestName     = guestEmail; // fallback لو ما لقى الاسم
+
+                    // ✅ FIX 3: جلب اسم الضيف الحقيقي من الداتابيس
+                    PreparedStatement namePs = conn.prepareStatement(
+                            "SELECT name FROM guests WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))");
+                    namePs.setString(1, guestEmail);
+                    ResultSet nameRs = namePs.executeQuery();
+                    if (nameRs.next()) {
+                        guestName = nameRs.getString("name");
+                    }
+
                     PreparedStatement eventPs = conn.prepareStatement(
                             "SELECT name, date, location FROM events WHERE id=?");
                     eventPs.setInt(1, eventId);
@@ -124,9 +140,11 @@ public class RSVPFrame extends JFrame {
                         eventLocation = rs.getString("location");
                     }
                     conn.close();
+
+                    // ✅ FIX 3 (تابع): تمرير اسم الضيف بدل الإيميل + تصحيح شرط القبول
                     new ThankYouFrame(
-                            status.equals("Accepted"),
-                            guestEmail,
+                            status.equals("Accept with pleasure"),
+                            guestName,
                             eventName,
                             eventDate,
                             eventLocation

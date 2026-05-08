@@ -249,37 +249,135 @@ public class ReportsFrame extends JFrame {
         }).start();
     }
 
+
+    // =========================================================
+    //  PDF Writer — styled event report
+    // =========================================================
     private void writePdf(File file,
                           String evName, String evDate, String evLoc,
                           String total, String accepted, String declined,
-                          java.util.List<String[]> guests) throws IOException {
+                          java.util.List<String[]> guestList) throws IOException {
 
         StringBuilder cs = new StringBuilder();
-        cs.append("BT\n/F1 20 Tf\n50 800 Td\n");
-        line(cs, "Event Report");
-        cs.append("/F1 11 Tf\n0 -14 Td\n");
-        line(cs, "================================================");
-        cs.append("/F1 13 Tf\n0 -20 Td\n");
-        line(cs, "Event  :  " + evName);
-        cs.append("0 -18 Td\n"); line(cs, "Date   :  " + evDate);
-        cs.append("0 -18 Td\n"); line(cs, "Venue  :  " + evLoc);
-        cs.append("0 -26 Td\n/F1 14 Tf\n"); line(cs, "Statistics");
-        cs.append("/F1 12 Tf\n0 -18 Td\n"); line(cs, "  Total Guests  :  " + total);
-        cs.append("0 -18 Td\n"); line(cs, "  Accepted      :  " + accepted);
-        cs.append("0 -18 Td\n"); line(cs, "  Declined      :  " + declined);
-        cs.append("0 -26 Td\n/F1 14 Tf\n"); line(cs, "Guest Details");
-        cs.append("/F1 11 Tf\n0 -18 Td\n");
-        line(cs, "  Name                         Response     Companions");
-        cs.append("0 -14 Td\n");
-        line(cs, "  -------------------------------------------------------");
 
-        for (String[] row : guests) {
-            cs.append("0 -16 Td\n");
-            String resp  = row[1].contains("Accept") ? "Accepted" : "Declined";
-            line(cs, "  " + pad(row[0], 30) + pad(resp, 14) + row[2]);
-        }
+        // ── Outer gold border ─────────────────────────────────────────────
+        cs.append("1.5 w\n");
+        cs.append("0.776 0.608 0.314 RG\n");
+        cs.append("30 40 535 762 re S\n");
+        cs.append("36 46 523 750 re S\n");
+
+        // ── Top header band ───────────────────────────────────────────────
+        cs.append("0.545 0.078 0.235 rg\n");
+        cs.append("30 760 535 42 re f\n");
+
+        // ── Header: "Event Report" ────────────────────────────────────────
+        cs.append("BT\n/F2 11 Tf\n1 1 1 rg\n");
+        appendCentered(cs, "- Event Statistics Report -", 595, 786, 11);
         cs.append("ET\n");
 
+        cs.append("BT\n/F1 26 Tf\n0.545 0.078 0.235 rg\n");
+        appendCentered(cs, "Event Report", 595, 718, 26);
+        cs.append("ET\n");
+
+        // ── Gold divider ──────────────────────────────────────────────────
+        cs.append("1 w\n0.776 0.608 0.314 RG\n");
+        cs.append("60 703 m 535 703 l S\n");
+
+        // ── Event details section ─────────────────────────────────────────
+        cs.append("BT\n/F1 13 Tf\n0.545 0.078 0.235 rg\n60 683 Td\n");
+        appendLine(cs, "Event Details");
+        cs.append("ET\n");
+
+        // thin rule under section heading
+        cs.append("0.4 w\n0.824 0.635 0.698 RG\n60 678 m 535 678 l S\n");
+
+        cs.append("BT\n/F2 12 Tf\n0.216 0.098 0.149 rg\n60 660 Td\n");
+        appendLine(cs, "Event  :   " + evName);
+        cs.append("0 -20 Td\n"); appendLine(cs, "Date   :   " + evDate);
+        cs.append("0 -20 Td\n"); appendLine(cs, "Location  :   " + evLoc);
+        cs.append("ET\n");
+
+        // ── Statistics section ────────────────────────────────────────────
+        cs.append("BT\n/F1 13 Tf\n0.545 0.078 0.235 rg\n60 593 Td\n");
+        appendLine(cs, "Statistics");
+        cs.append("ET\n");
+        cs.append("0.4 w\n0.824 0.635 0.698 RG\n60 588 m 535 588 l S\n");
+
+        // Three stat boxes (drawn as rectangles)
+        // Box 1 – Total Guests
+        drawStatBox(cs, 60,  530, "Total Guests", total,   "0.545 0.078 0.235");
+        // Box 2 – Accepted
+        drawStatBox(cs, 220, 530, "Accepted",     accepted, "0.133 0.545 0.133");
+        // Box 3 – Declined
+        drawStatBox(cs, 380, 530, "Declined",     declined, "0.706 0.196 0.196");
+
+        // ── Guest Details section ─────────────────────────────────────────
+        cs.append("BT\n/F1 13 Tf\n0.545 0.078 0.235 rg\n60 430 Td\n");
+        appendLine(cs, "Guest Details");
+        cs.append("ET\n");
+        cs.append("0.4 w\n0.824 0.635 0.698 RG\n60 425 m 535 425 l S\n");
+
+        // Table header row background
+        cs.append("0.545 0.078 0.235 rg\n60 400 475 22 re f\n");
+
+        cs.append("BT\n/F1 11 Tf\n1 1 1 rg\n");
+        cs.append("68 408 Td\n");  appendLine(cs, "Name");
+        cs.append("280 408 Td\n"); appendLine(cs, "Response");
+        cs.append("420 408 Td\n"); appendLine(cs, "Companions");
+        cs.append("ET\n");
+
+        // Guest rows
+        int y = 398;
+        int rowIdx = 0;
+        for (String[] row : guestList) {
+            y -= 22;
+            if (y < 65) break; // don't overflow past bottom border
+
+            // alternating row background
+            if (rowIdx % 2 == 0) {
+                cs.append("0.996 0.973 0.980 rg\n");
+            } else {
+                cs.append("0.988 0.945 0.957 rg\n");
+            }
+            cs.append("60 ").append(y - 4).append(" 475 22 re f\n");
+
+            String resp     = (row[1] != null && row[1].contains("Accept")) ? "Accepted" : "Declined";
+            String respColor = resp.equals("Accepted") ? "0.133 0.545 0.133" : "0.706 0.196 0.196";
+            String companions = row[2];
+
+            // Name
+            cs.append("BT\n/F2 10 Tf\n0.216 0.098 0.149 rg\n");
+            cs.append("68 ").append(y + 3).append(" Td\n");
+            appendLine(cs, truncate(row[0], 28));
+            cs.append("ET\n");
+
+            // Response (colored)
+            cs.append("BT\n/F1 10 Tf\n").append(respColor).append(" rg\n");
+            cs.append("280 ").append(y + 3).append(" Td\n");
+            appendLine(cs, resp);
+            cs.append("ET\n");
+
+            // Companions
+            cs.append("BT\n/F2 10 Tf\n0.216 0.098 0.149 rg\n");
+            cs.append("420 ").append(y + 3).append(" Td\n");
+            appendLine(cs, companions);
+            cs.append("ET\n");
+
+            // thin row separator
+            cs.append("0.2 w\n0.824 0.635 0.698 RG\n");
+            cs.append("60 ").append(y - 4).append(" m 535 ").append(y - 4).append(" l S\n");
+
+            rowIdx++;
+        }
+
+        // ── Bottom band ────────────────────────────────────────────────────
+        cs.append("0.545 0.078 0.235 rg\n30 40 535 18 re f\n");
+
+        cs.append("BT\n/F2 9 Tf\n1 1 1 rg\n");
+        appendCentered(cs, "Invitation Management System  |  Generated automatically", 595, 52, 9);
+        cs.append("ET\n");
+
+        // ── Build PDF binary ───────────────────────────────────────────────
         byte[] csBytes = cs.toString().getBytes("ISO-8859-1");
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
         int[] off = new int[10];
@@ -290,11 +388,13 @@ public class ReportsFrame extends JFrame {
         off[2] = buf.size();
         write(buf, "2 0 obj\n<< /Type /Pages /Kids [4 0 R] /Count 1 >>\nendobj\n");
         off[3] = buf.size();
-        write(buf, "3 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>\nendobj\n");
+        write(buf, "3 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>\nendobj\n");
+        off[6] = buf.size();
+        write(buf, "6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n");
         off[4] = buf.size();
-        write(buf, "4 0 obj\n<< /Type /Page /Parent 2 0 R\n" +
-            "   /MediaBox [0 0 595 842]\n   /Contents 5 0 R\n" +
-            "   /Resources << /Font << /F1 3 0 R >> >> >>\nendobj\n");
+        write(buf, "4 0 obj\n<< /Type /Page /Parent 2 0 R\n"
+            + "   /MediaBox [0 0 595 842]\n   /Contents 5 0 R\n"
+            + "   /Resources << /Font << /F1 3 0 R /F2 6 0 R >> >> >>\nendobj\n");
         off[5] = buf.size();
         write(buf, "5 0 obj\n<< /Length " + csBytes.length + " >>\nstream\n");
         buf.write(csBytes);
@@ -302,27 +402,59 @@ public class ReportsFrame extends JFrame {
 
         int xOff = buf.size();
         StringBuilder xref = new StringBuilder();
-        xref.append("xref\n0 6\n").append(String.format("%010d 65535 f \n", 0));
-        for (int i = 1; i <= 5; i++) xref.append(String.format("%010d 00000 n \n", off[i]));
-        xref.append("trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n")
+        xref.append("xref\n0 7\n").append(String.format("%010d 65535 f \n", 0));
+        for (int i = 1; i <= 6; i++) xref.append(String.format("%010d 00000 n \n", off[i]));
+        xref.append("trailer\n<< /Size 7 /Root 1 0 R >>\nstartxref\n")
             .append(xOff).append("\n%%EOF\n");
         buf.write(xref.toString().getBytes("ISO-8859-1"));
 
         Files.write(file.toPath(), buf.toByteArray());
     }
 
-    private void line(StringBuilder cs, String text) {
-        String s = text.replace("\\","\\\\").replace("(","\\(").replace(")","\\)");
+    /** Draw a colored stat card box with label + big number */
+    private void drawStatBox(StringBuilder cs, int x, int y, String label, String value, String rgbColor) {
+        // Box background (light tint)
+        cs.append("0.988 0.945 0.957 rg\n");
+        cs.append(x).append(" ").append(y - 52).append(" 140 60 re f\n");
+        // Colored top accent strip
+        cs.append(rgbColor).append(" rg\n");
+        cs.append(x).append(" ").append(y + 5).append(" 140 6 re f\n");
+        // Border
+        cs.append("0.3 w\n").append(rgbColor).append(" RG\n");
+        cs.append(x).append(" ").append(y - 52).append(" 140 60 re S\n");
+        // Label
+        cs.append("BT\n/F2 10 Tf\n0.216 0.098 0.149 rg\n");
+        double labelX = x + (140 - label.length() * 5.5) / 2.0;
+        cs.append((int) labelX).append(" ").append(y - 12).append(" Td\n");
+        appendLine(cs, label);
+        cs.append("ET\n");
+        // Big number
+        cs.append("BT\n/F1 22 Tf\n").append(rgbColor).append(" rg\n");
+        double numX = x + (140 - value.length() * 13.0) / 2.0;
+        cs.append((int) numX).append(" ").append(y - 40).append(" Td\n");
+        appendLine(cs, value);
+        cs.append("ET\n");
+    }
+
+    private void appendLine(StringBuilder cs, String text) {
+        String s = text == null ? "" : text
+            .replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)");
         cs.append("(").append(s).append(") Tj\n");
     }
+
+    private void appendCentered(StringBuilder cs, String text, int pageW, int y, int fontSize) {
+        int x = (int) ((pageW - text.length() * fontSize * 0.52) / 2.0);
+        if (x < 40) x = 40;
+        cs.append(x).append(" ").append(y).append(" Td\n");
+        appendLine(cs, text);
+    }
+
     private void write(ByteArrayOutputStream buf, String s) throws IOException {
         buf.write(s.getBytes("ISO-8859-1"));
     }
-    private String pad(String s, int len) {
-        if (s == null) s = "";
-        if (s.length() >= len) return s.substring(0, len);
-        StringBuilder sb = new StringBuilder(s);
-        while (sb.length() < len) sb.append(' ');
-        return sb.toString();
+
+    private String truncate(String s, int max) {
+        if (s == null) return "";
+        return s.length() > max ? s.substring(0, max - 1) + "." : s;
     }
 }
