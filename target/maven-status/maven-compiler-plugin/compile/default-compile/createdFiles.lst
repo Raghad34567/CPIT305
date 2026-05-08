@@ -1,10 +1,11 @@
 com\mycompany\invitationmanagementsystem\DashboardFrame$MenuCard$1.class
-com\mycompany\invitationmanagementsystem\CheckInFrame.class
 com\mycompany\invitationmanagementsystem\LoginFrame$1.class
+com\mycompany\invitationmanagementsystem\EmailServer$EmailServerException.class
 com\mycompany\invitationmanagementsystem\UITheme$1.class
 com\mycompany\invitationmanagementsystem\UITheme$6.class
 com\mycompany\invitationmanagementsystem\DBConnection.class
 com\mycompany\invitationmanagementsystem\GuestLinkFrame.class
+com\mycompany\invitationmanagementsystem\ResponsesFrame$1.class
 com\mycompany\invitationmanagementsystem\SignUpFrame.class
 com\mycompany\invitationmanagementsystem\RoleSelectionFrame.class
 com\mycompany\invitationmanagementsystem\UITheme$3.class
@@ -23,6 +24,7 @@ com\mycompany\invitationmanagementsystem\ManageGuestsFrame$1.class
 com\mycompany\invitationmanagementsystem\UITheme$2.class
 com\mycompany\invitationmanagementsystem\UITheme$9.class
 com\mycompany\invitationmanagementsystem\ReportsFrame$1.class
+com\mycompany\invitationmanagementsystem\DBConnection$DatabaseConnectionException.class
 com\mycompany\invitationmanagementsystem\DashboardFrame$MenuCard.class
 com\mycompany\invitationmanagementsystem\UITheme.class
 com\mycompany\invitationmanagementsystem\GuestInvitationFrame$1.class
