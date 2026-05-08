@@ -14,39 +14,35 @@ public class DashboardFrame extends JFrame {
 
         JPanel main = UITheme.createRoseBackground();
         main.setLayout(new BorderLayout());
+        main.add(UITheme.createHeader("Event Management Dashboard"), BorderLayout.NORTH);
 
-        main.add(UITheme.createHeader("Wedding Management Dashboard"), BorderLayout.NORTH);
-
-        JPanel grid = new JPanel(new GridLayout(2, 3, 28, 28));
+        // ✅ أربع بطاقات فقط بعد حذف Send Invitation و Guest Check-In
+        JPanel grid = new JPanel(new GridLayout(2, 2, 28, 28));
         grid.setOpaque(false);
         grid.setBorder(BorderFactory.createEmptyBorder(18, 52, 18, 52));
 
-        MenuCard createEvent     = new MenuCard("Create Event");
-        MenuCard manageGuests    = new MenuCard("Manage Guests");
-        MenuCard sendInvitations = new MenuCard("Send Invitation");
-        MenuCard viewResponses   = new MenuCard("View Response");
-        MenuCard reports         = new MenuCard("Reports");
-        MenuCard guestCheckIn    = new MenuCard("Guest Check-In");
+        MenuCard createEvent  = new MenuCard("Create Event");
+        MenuCard manageGuests = new MenuCard("Manage Guests");
+        MenuCard viewResponses = new MenuCard("View Response");
+        MenuCard reports      = new MenuCard("Reports");
 
         grid.add(createEvent);
         grid.add(manageGuests);
-        grid.add(sendInvitations);
         grid.add(viewResponses);
         grid.add(reports);
-        grid.add(guestCheckIn);
 
         main.add(grid, BorderLayout.CENTER);
 
         JButton logout = new JButton("Logout");
         main.add(UITheme.createButtonBar(logout), BorderLayout.SOUTH);
+
         add(main);
 
-        createEvent.onClick(e     -> { new CreateEventFrame(this).setVisible(true);  setVisible(false); });
-        manageGuests.onClick(e    -> { new ManageGuestsFrame(this).setVisible(true); setVisible(false); });
-        sendInvitations.onClick(e -> { new GuestLinkFrame(this).setVisible(true);    setVisible(false); });
-        viewResponses.onClick(e   -> { new ResponsesFrame(this).setVisible(true);    setVisible(false); });
-        reports.onClick(e         -> { new ReportsFrame(this).setVisible(true);      setVisible(false); });
-        guestCheckIn.onClick(e    -> { new CheckInFrame(this).setVisible(true);      setVisible(false); });
+        createEvent.onClick(e  -> { new CreateEventFrame(this).setVisible(true);  setVisible(false); });
+        manageGuests.onClick(e -> { new ManageGuestsFrame(this).setVisible(true); setVisible(false); });
+        viewResponses.onClick(e -> { new ResponsesFrame(this).setVisible(true);   setVisible(false); });
+        reports.onClick(e      -> { new ReportsFrame(this).setVisible(true);      setVisible(false); });
+
         logout.addActionListener(e -> {
             JOptionPane.showMessageDialog(this, "Logged out successfully");
             new RoleSelectionFrame().setVisible(true);
@@ -54,9 +50,8 @@ public class DashboardFrame extends JFrame {
         });
     }
 
-    // ── MenuCard: JPanel يتصرف كزر ─────────────────
+    // ── MenuCard ─────────────────────────────────────────────────────────────
     static class MenuCard extends JPanel {
-
         private boolean hovered = false;
         private boolean pressed = false;
         private final String text;
@@ -66,7 +61,6 @@ public class DashboardFrame extends JFrame {
             this.text = text;
             setOpaque(false);
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
             addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e)  { hovered = true;  repaint(); }
                 public void mouseExited (MouseEvent e)  { hovered = false; pressed = false; repaint(); }
@@ -86,38 +80,30 @@ public class DashboardFrame extends JFrame {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
             int w = getWidth(), h = getHeight();
-
             Color fill = pressed ? UITheme.PRIMARY_DK
                        : hovered ? UITheme.PRIMARY_LT
                        : UITheme.PRIMARY;
-
             // shadow
             g2.setColor(new Color(80, 0, 25, 55));
             g2.fillRoundRect(4, 6, w - 5, h - 5, 26, 26);
-
             // body
             g2.setColor(fill);
             g2.fillRoundRect(0, 0, w - 3, h - 3, 24, 24);
-
             // top shine
             g2.setColor(new Color(255, 255, 255, 22));
             g2.fillRoundRect(6, 3, w - 16, h / 3, 20, 20);
-
             // gold border
             g2.setColor(new Color(198, 155, 80, 170));
             g2.setStroke(new BasicStroke(1.6f));
             g2.drawRoundRect(1, 1, w - 5, h - 5, 24, 24);
-
             // label
-            g2.setFont(new Font("Serif", Font.BOLD, 16));
+            g2.setFont(new Font("Serif", Font.BOLD, 18));
             g2.setColor(Color.WHITE);
             FontMetrics fm = g2.getFontMetrics();
             g2.drawString(text,
                 (w - fm.stringWidth(text)) / 2,
                 (h - fm.getHeight()) / 2 + fm.getAscent());
-
             g2.dispose();
         }
     }

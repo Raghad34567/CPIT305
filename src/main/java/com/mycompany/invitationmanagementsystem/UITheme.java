@@ -2,6 +2,7 @@ package com.mycompany.invitationmanagementsystem;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.plaf.basic.*;
 import java.awt.*;
 import java.awt.geom.*;
 
@@ -15,9 +16,7 @@ public class UITheme {
     public static final Color TEXT_LIGHT = new Color(140, 85, 108);
     public static final Color BORDER     = new Color(210, 162, 178);
     public static final Color GOLD       = new Color(198, 155,  80);
-
-    // Legacy aliases so old code that uses Color (non-final) still compiles
-    public static Color BACKGROUND = new Color(255, 248, 248);
+    public static Color       BACKGROUND = new Color(255, 248, 248);
 
     // ═══════════════════════════════════════════
     //  PILL BUTTON
@@ -31,7 +30,6 @@ public class UITheme {
         btn.setForeground(Color.WHITE);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btn.setBorder(BorderFactory.createEmptyBorder(11, 34, 11, 34));
-
         btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
             @Override public void paint(Graphics g, JComponent c) {
                 JButton b = (JButton) c;
@@ -58,7 +56,6 @@ public class UITheme {
                 g2.dispose();
             }
         });
-
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered (java.awt.event.MouseEvent e) { btn.putClientProperty("hov",true);  btn.repaint(); }
             public void mouseExited  (java.awt.event.MouseEvent e) { btn.putClientProperty("hov",false); btn.putClientProperty("prs",false); btn.repaint(); }
@@ -119,46 +116,166 @@ public class UITheme {
     }
 
     // ═══════════════════════════════════════════
-    //  STYLED COMBOBOX
+    //  STYLED COMBOBOX — متوافق مع macOS ✅
     // ═══════════════════════════════════════════
     public static JComboBox<String> createComboBox(String label) {
         JComboBox<String> cb = new JComboBox<>();
-        cb.setFont(new Font("Serif", Font.PLAIN, 15));
-        cb.setForeground(TEXT);
-        cb.setBackground(new Color(255,250,252));
-        cb.setBorder(BorderFactory.createCompoundBorder(
-            new TitledBorder(BorderFactory.createLineBorder(BORDER,1,true),
-                " "+label+" ", TitledBorder.LEFT, TitledBorder.TOP,
-                new Font("SansSerif",Font.PLAIN,11), TEXT_LIGHT),
-            BorderFactory.createEmptyBorder(2,4,4,4)));
+        styleComboBox(cb, label);
         return cb;
     }
 
+    public static void styleComboBox(JComboBox<String> cb, String label) {
+        // إجبار macOS على استخدام BasicUI بدل AquaUI
+        cb.setUI(new BasicComboBoxUI() {
+            @Override
+            protected JButton createArrowButton() {
+                JButton btn = new JButton() {
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2.setColor(new Color(255, 245, 248));
+                        g2.fillRect(0, 0, getWidth(), getHeight());
+                        // رسم سهم لأسفل
+                        g2.setColor(PRIMARY);
+                        int cx = getWidth() / 2;
+                        int cy = getHeight() / 2;
+                        int[] xp = {cx - 5, cx + 5, cx};
+                        int[] yp = {cy - 3, cy - 3, cy + 3};
+                        g2.fillPolygon(xp, yp, 3);
+                        g2.dispose();
+                    }
+                };
+                btn.setOpaque(false);
+                btn.setContentAreaFilled(false);
+                btn.setBorderPainted(false);
+                btn.setFocusPainted(false);
+                btn.setPreferredSize(new Dimension(30, 30));
+                return btn;
+            }
+
+            @Override
+            public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setColor(new Color(255, 248, 251));
+                g2.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+                g2.dispose();
+            }
+        });
+
+        cb.setFont(new Font("Serif", Font.PLAIN, 15));
+        cb.setForeground(TEXT);
+        cb.setBackground(new Color(255, 248, 251));
+        cb.setOpaque(true);
+        cb.setPreferredSize(new Dimension(200, 42));
+        cb.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+
+        // Renderer للـ items داخل القائمة
+        cb.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value,
+                    int index, boolean isSelected, boolean cellHasFocus) {
+                JLabel lbl = (JLabel) super.getListCellRendererComponent(
+                        list, value, index, isSelected, cellHasFocus);
+                lbl.setFont(new Font("Serif", Font.PLAIN, 15));
+                lbl.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
+                if (isSelected) {
+                    lbl.setBackground(new Color(220, 160, 180));
+                    lbl.setForeground(Color.WHITE);
+                } else {
+                    lbl.setBackground(Color.WHITE);
+                    lbl.setForeground(TEXT);
+                }
+                return lbl;
+            }
+        });
+
+        // Border مع عنوان
+        cb.setBorder(BorderFactory.createCompoundBorder(
+            new TitledBorder(
+                BorderFactory.createLineBorder(BORDER, 1, true),
+                " " + label + " ",
+                TitledBorder.LEFT, TitledBorder.TOP,
+                new Font("SansSerif", Font.PLAIN, 11), TEXT_LIGHT),
+            BorderFactory.createEmptyBorder(2, 4, 4, 4)));
+    }
+
     // ═══════════════════════════════════════════
-    //  STYLED TABLE
+    //  STYLED TABLE — موحد ومتناسق ✅
     // ═══════════════════════════════════════════
     public static void styleTable(JTable table) {
         table.setFont(new Font("Serif", Font.PLAIN, 15));
         table.setForeground(TEXT);
-        table.setBackground(new Color(255,252,254));
-        table.setRowHeight(32);
-        table.setGridColor(new Color(225,190,205));
-        table.setSelectionBackground(new Color(220,160,180));
+        table.setBackground(new Color(255, 252, 254));
+        table.setRowHeight(36);
+        table.setGridColor(new Color(225, 190, 205));
+        table.setShowVerticalLines(false);
+        table.setIntercellSpacing(new Dimension(0, 1));
+        table.setSelectionBackground(new Color(190, 90, 130));
         table.setSelectionForeground(Color.WHITE);
-        table.getTableHeader().setFont(new Font("Serif", Font.BOLD, 15));
-        table.getTableHeader().setBackground(PRIMARY);
-        table.getTableHeader().setForeground(Color.WHITE);
-        table.getTableHeader().setBorder(BorderFactory.createEmptyBorder());
+        table.setFillsViewportHeight(true);
+
+        // Alternating row colors
+        table.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable t, Object val,
+                    boolean sel, boolean foc, int row, int col) {
+                Component c = super.getTableCellRendererComponent(t, val, sel, foc, row, col);
+                if (!sel) {
+                    c.setBackground(row % 2 == 0
+                        ? new Color(255, 250, 252)
+                        : new Color(250, 240, 245));
+                    c.setForeground(TEXT);
+                }
+                ((JLabel) c).setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+                ((JLabel) c).setHorizontalAlignment(SwingConstants.LEFT);
+                return c;
+            }
+        });
+
+        // Header styling
+        table.getTableHeader().setDefaultRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable t, Object val,
+                    boolean sel, boolean foc, int row, int col) {
+                JLabel lbl = new JLabel(val != null ? val.toString() : "", SwingConstants.LEFT);
+                lbl.setFont(new Font("Serif", Font.BOLD, 14));
+                lbl.setForeground(Color.WHITE);
+                lbl.setOpaque(true);
+                lbl.setBackground(PRIMARY);
+                lbl.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
+                return lbl;
+            }
+        });
+        table.getTableHeader().setPreferredSize(new Dimension(0, 44));
+        table.getTableHeader().setResizingAllowed(true);
+        table.getTableHeader().setReorderingAllowed(false);
     }
 
     public static JScrollPane createStyledScroll(JTable table) {
         styleTable(table);
         JScrollPane scroll = new JScrollPane(table);
         scroll.setOpaque(false);
-        scroll.getViewport().setBackground(new Color(255,252,254));
+        scroll.getViewport().setOpaque(false);
+        scroll.getViewport().setBackground(new Color(255, 252, 254));
         scroll.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(0,16,0,16),
-            BorderFactory.createLineBorder(BORDER,1,true)));
+            BorderFactory.createEmptyBorder(0, 16, 0, 16),
+            BorderFactory.createLineBorder(BORDER, 1, true)));
+
+        // Custom scrollbar
+        scroll.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override protected void configureScrollBarColors() {
+                thumbColor = new Color(190, 120, 150);
+                trackColor = new Color(245, 232, 238);
+            }
+            @Override protected JButton createDecreaseButton(int o) {
+                JButton b = new JButton(); b.setPreferredSize(new Dimension(0,0)); return b;
+            }
+            @Override protected JButton createIncreaseButton(int o) {
+                JButton b = new JButton(); b.setPreferredSize(new Dimension(0,0)); return b;
+            }
+        });
+        scroll.getVerticalScrollBar().setPreferredSize(new Dimension(8, 0));
         return scroll;
     }
 
@@ -192,7 +309,7 @@ public class UITheme {
     }
 
     // ═══════════════════════════════════════════
-    //  ROSE BACKGROUND (static)
+    //  ROSE BACKGROUND
     // ═══════════════════════════════════════════
     public static JPanel createRoseBackground() {
         return new JPanel() {

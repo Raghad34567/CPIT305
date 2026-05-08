@@ -13,7 +13,7 @@ public class GuestInvitationFrame extends JFrame {
         this.guestName = guestName;
         this.eventId   = eventId;
 
-        setTitle("Wedding Invitation");
+        setTitle("Invitation");
         setSize(820, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -107,6 +107,27 @@ public class GuestInvitationFrame extends JFrame {
         topPanel.add(mainTitle);
         topPanel.add(goldDiv);
 
+        // ── FETCH event info from DB ──────────────────
+        String eventName     = "Wedding Celebration";
+        String eventDate     = "20 May 2026";
+        String eventLocation = "Grand Royal Hall";
+        try {
+            java.sql.Connection conn = DBConnection.connect();
+            java.sql.PreparedStatement ps = conn.prepareStatement(
+                "SELECT name, date, location FROM events WHERE id = ?");
+            ps.setInt(1, eventId);
+            java.sql.ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                eventName     = rs.getString("name");
+                eventDate     = rs.getString("date");
+                eventLocation = rs.getString("location");
+            }
+        } catch (Exception ex) { ex.printStackTrace(); }
+
+        final String fEventName     = eventName;
+        final String fEventDate     = eventDate;
+        final String fEventLocation = eventLocation;
+
         // ── CENTER CONTENT ───────────────────────────
         JPanel centerPanel = new JPanel();
         centerPanel.setOpaque(false);
@@ -114,7 +135,7 @@ public class GuestInvitationFrame extends JFrame {
         centerPanel.setBorder(BorderFactory.createEmptyBorder(16, 65, 10, 65));
 
         Object[][] lines = {
-            // {text, style}  style: 0=plain, 1=names, 2=bold, 3=italic-light, 4=space
+            // {text, style}  style: 0=plain, 1=names, 2=bold, 3=italic-light, 4=space, 5=event-title
             {"Together with their families",                   0},
             {"",                                               4},
             {"Bride  &  Groom",                                1},
@@ -122,8 +143,10 @@ public class GuestInvitationFrame extends JFrame {
             {"request the pleasure of your company",           0},
             {"at their wedding celebration",                   0},
             {"",                                               4},
-            {"Date :   20 May 2026",                           2},
-            {"Venue :  Grand Royal Hall",                      2},
+            {fEventName,                                       5},
+            {"",                                               4},
+            {"Date :   " + fEventDate,                         2},
+            {"Venue :  " + fEventLocation,                     2},
             {"",                                               4},
             {"Your presence will make our day truly special.", 3},
         };
@@ -153,6 +176,13 @@ public class GuestInvitationFrame extends JFrame {
                 case 3: // italic light
                     l.setFont(new Font("Serif", Font.ITALIC, 14));
                     l.setForeground(UITheme.TEXT_LIGHT);
+                    break;
+                case 5: // event name — highlighted gold
+                    l.setFont(new Font("Serif", Font.BOLD, 18));
+                    l.setForeground(new Color(160, 100, 40));
+                    l.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(198, 155, 80, 120)),
+                        BorderFactory.createEmptyBorder(2, 0, 4, 0)));
                     break;
                 default: // plain
                     l.setFont(new Font("Serif", Font.PLAIN, 15));

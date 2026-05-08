@@ -12,38 +12,43 @@ public class ResponsesFrame extends JFrame {
     public ResponsesFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
         setTitle("Guest Responses");
-        setSize(900, 600);
+        setSize(900, 620);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel main = UITheme.createRoseBackground();
-        main.setLayout(new BorderLayout());
+        main.setLayout(new BorderLayout(0, 0));
+        main.add(UITheme.createHeader("RSVP Responses"), BorderLayout.NORTH);
 
-        JLabel title = new JLabel("RSVP Responses", SwingConstants.CENTER);
-        title.setFont(new Font("Serif", Font.BOLD, 28));
-        title.setForeground(UITheme.TEXT);
-        title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-
+        // ── Table ────────────────────────────────────
         DefaultTableModel model = new DefaultTableModel(
-            new String[]{"Guest Name", "Response", "Guests Count"}, 0);
+            new String[]{"Guest Name", "Response", "Guests Count"}, 0) {
+            public boolean isCellEditable(int r, int c) { return false; }
+        };
+
         JTable table = new JTable(model);
-        table.setFont(new Font("Serif", Font.PLAIN, 16));
-        table.setRowHeight(28);
-        JScrollPane scroll = new JScrollPane(table);
+        UITheme.styleTable(table);
 
-        JButton back = new JButton("Back");
-        UITheme.styleButton(back);
+        // Center-align "Response" and "Guests Count" columns
+        javax.swing.table.DefaultTableCellRenderer centerRenderer =
+            new javax.swing.table.DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
 
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setOpaque(false);
-        bottomPanel.add(back);
+        JScrollPane scroll = UITheme.createStyledScroll(table);
+        scroll.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(4, 24, 4, 24),
+            BorderFactory.createLineBorder(UITheme.BORDER, 1, true)));
 
-        main.add(title, BorderLayout.NORTH);
         main.add(scroll, BorderLayout.CENTER);
-        main.add(bottomPanel, BorderLayout.SOUTH);
+
+        // ── Back button ───────────────────────────────
+        JButton back = new JButton("Back");
+        main.add(UITheme.createButtonBar(back), BorderLayout.SOUTH);
         add(main);
 
-        // ================= LOAD RESPONSES =================
+        // ── Load data ─────────────────────────────────
         new Thread(() -> {
             try {
                 Connection conn = DBConnection.connect();
@@ -54,17 +59,12 @@ public class ResponsesFrame extends JFrame {
                     String name     = rs.getString("name");
                     String response = rs.getString("response");
                     int    count    = rs.getInt("guest_count");
-                    SwingUtilities.invokeLater(
-                        () -> model.addRow(new Object[]{name, response, count}));
+                    SwingUtilities.invokeLater(() ->
+                        model.addRow(new Object[]{name, response, count}));
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            } catch (Exception ex) { ex.printStackTrace(); }
         }).start();
 
-        back.addActionListener(e -> {
-            dashboard.setVisible(true);
-            dispose();
-        });
+        back.addActionListener(e -> { dashboard.setVisible(true); dispose(); });
     }
 }

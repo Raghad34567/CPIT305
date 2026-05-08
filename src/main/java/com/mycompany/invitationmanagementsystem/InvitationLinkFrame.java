@@ -60,7 +60,7 @@ public class InvitationLinkFrame extends JFrame {
         card.add(buttonPanel, BorderLayout.CENTER);
 
         JLabel instruction = new JLabel(
-            "Paste the link sent to you via SMS or Email",
+            "Paste the link sent to your Email",
             SwingConstants.CENTER);
         instruction.setFont(new Font("SansSerif", Font.PLAIN, 16));
         instruction.setForeground(UITheme.TEXT);
