@@ -7,7 +7,9 @@ public class InvitationManagementSystem {
         // Organizer log in:
         // Username: admin
         // Password: 1234
-        
+         CreateEventDatabase.setup();
+
+        new LoginFrame().setVisible(true);
         new RoleSelectionFrame().setVisible(true);
     }
 }

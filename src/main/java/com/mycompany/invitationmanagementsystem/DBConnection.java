@@ -6,14 +6,28 @@ import java.sql.DriverManager;
 public class DBConnection {
 
     public static Connection connect() {
+
         try {
-            return DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/wedding_system?useSSL=false&allowPublicKeyRetrieval=true",
-                    "root",
-                    "1234"
+
+            String url =
+            "jdbc:mysql://localhost:3306/invitation_db?useSSL=false&allowPublicKeyRetrieval=true";
+
+            String user = "root";
+
+            String password = "1234";
+
+            Connection con = DriverManager.getConnection(
+                    url,
+                    user,
+                    password
             );
+
+            return con;
+
         } catch (Exception e) {
-            e.printStackTrace();
+
+            System.out.println(e);
+
             return null;
         }
     }
