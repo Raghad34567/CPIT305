@@ -61,16 +61,17 @@ public class EmailServer {
 
     private static void sendInvitationEmail(String receiverEmail, String guestName, String inviteLink) throws Exception {
 
-        String subject = "Wedding Invitation";
+    String subject = "Event Invitation";
 
-        String body = "Dear " + guestName + ",\n\n"
-                + "You are invited to our wedding event.\n"
-                + "Please open this invitation link:\n"
-                + inviteLink + "\n\n"
-                + "Best regards.";
+    String body = "Dear " + guestName + ",\n\n"
+            + "You are invited to our event.\n\n"
+            + "Please copy the invitation link below and paste it in the RSVP page in the program:\n"
+            + inviteLink + "\n\n"
+            + "Best regards,\n"
+            + "Invitation Management System";
 
-        sendEmail(receiverEmail, subject, body);
-    }
+    sendEmail(receiverEmail, subject, body);
+}
 
     private static void sendEmail(String receiverEmail, String subject, String body) throws Exception {
 

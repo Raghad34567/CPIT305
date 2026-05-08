@@ -9,7 +9,7 @@ public class ReportsFrame extends JFrame {
 
     public ReportsFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
-        setTitle("Wedding Reports & Statistics");
+        setTitle("Event Reports & Statistics");
         setSize(900, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -17,7 +17,7 @@ public class ReportsFrame extends JFrame {
         JPanel main = UITheme.createRoseBackground();
         main.setLayout(new BorderLayout());
 
-        JLabel title = new JLabel("Wedding Reports Overview", SwingConstants.CENTER);
+        JLabel title = new JLabel("Event Reports Overview", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 30));
         title.setForeground(UITheme.TEXT);
         title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));

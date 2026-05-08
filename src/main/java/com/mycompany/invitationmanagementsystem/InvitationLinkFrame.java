@@ -3,6 +3,8 @@ package com.mycompany.invitationmanagementsystem;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 public class InvitationLinkFrame extends JFrame {
 
@@ -20,13 +22,12 @@ public class InvitationLinkFrame extends JFrame {
         title.setForeground(UITheme.TEXT);
         title.setBorder(BorderFactory.createEmptyBorder(30, 10, 20, 10));
 
-        // card
         JPanel card = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                    RenderingHints.VALUE_ANTIALIAS_ON);
+                        RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(new Color(0, 0, 0, 25));
                 g2.fillRoundRect(4, 6, getWidth() - 6, getHeight() - 6, 26, 26);
                 g2.setColor(Color.WHITE);
@@ -37,6 +38,7 @@ public class InvitationLinkFrame extends JFrame {
                 g2.dispose();
             }
         };
+
         card.setOpaque(false);
         card.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         card.setLayout(new BorderLayout(20, 20));
@@ -47,7 +49,8 @@ public class InvitationLinkFrame extends JFrame {
         linkField.setPreferredSize(new Dimension(400, 50));
 
         JButton openButton = new JButton("Open Invitation");
-        JButton logout     = new JButton("Logout");
+        JButton logout = new JButton("Logout");
+
         UITheme.styleButton(openButton);
         UITheme.styleButton(logout);
 
@@ -60,8 +63,9 @@ public class InvitationLinkFrame extends JFrame {
         card.add(buttonPanel, BorderLayout.CENTER);
 
         JLabel instruction = new JLabel(
-            "Paste the link sent to your Email",
-            SwingConstants.CENTER);
+                "Paste the link sent to you via Email",
+                SwingConstants.CENTER);
+
         instruction.setFont(new Font("SansSerif", Font.PLAIN, 16));
         instruction.setForeground(UITheme.TEXT);
         instruction.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
@@ -73,24 +77,39 @@ public class InvitationLinkFrame extends JFrame {
 
         openButton.addActionListener(e -> {
             String link = linkField.getText().trim();
+
             if (link.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Enter invitation link");
                 return;
             }
+
             try {
-                String guestName = link.substring(link.lastIndexOf("/") + 1);
+                String guestEmail = extractGuestEmail(link);
+
+                if (guestEmail.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Invalid link! Guest email not found.");
+                    return;
+                }
+
                 Connection conn = DBConnection.connect();
+
                 PreparedStatement ps = conn.prepareStatement(
-                    "SELECT event_id FROM guests WHERE name=?");
-                ps.setString(1, guestName);
+                        "SELECT name, event_id FROM guests WHERE phone=?");
+
+                ps.setString(1, guestEmail);
+
                 ResultSet rs = ps.executeQuery();
+
                 if (rs.next()) {
                     int eventId = rs.getInt("event_id");
-                    new GuestInvitationFrame(guestName, eventId).setVisible(true);
+
+                    new GuestInvitationFrame(link, eventId).setVisible(true);
                     dispose();
+
                 } else {
                     JOptionPane.showMessageDialog(this, "Guest not found!");
                 }
+
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Invalid link!");
@@ -101,5 +120,23 @@ public class InvitationLinkFrame extends JFrame {
             new RoleSelectionFrame().setVisible(true);
             dispose();
         });
+    }
+
+    private String extractGuestEmail(String link) {
+        try {
+            if (link.contains("guestEmail=")) {
+                String email = link.substring(link.indexOf("guestEmail=") + 11);
+
+                if (email.contains("&")) {
+                    email = email.substring(0, email.indexOf("&"));
+                }
+
+                return URLDecoder.decode(email, StandardCharsets.UTF_8);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "";
     }
 }

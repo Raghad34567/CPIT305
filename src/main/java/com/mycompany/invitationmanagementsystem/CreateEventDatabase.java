@@ -12,7 +12,7 @@ public class CreateEventDatabase {
 
             Connection con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true",
-                "root", "Lturki20");
+                "root", "1234");
 
             Statement st = con.createStatement();
 
@@ -26,7 +26,7 @@ public class CreateEventDatabase {
                 "name VARCHAR(100), " +
                 "date VARCHAR(50), " +
                 "location VARCHAR(150), " +
-                "capacity INT)"   // ✅ تم إصلاح: أُزيلت الفاصلة الزيادة وأُضيف )
+                "capacity INT)"   
             );
 
             // ── guests table ──────────────────────────────
@@ -54,7 +54,7 @@ public class CreateEventDatabase {
             con.close();
 
         } catch (Exception e) {
-            e.printStackTrace(); // ✅ تم التحسين: يعطيك تفاصيل الخطأ كاملة
+            e.printStackTrace(); 
         }
     }
 

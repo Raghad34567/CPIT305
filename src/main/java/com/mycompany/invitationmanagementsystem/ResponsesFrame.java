@@ -8,63 +8,155 @@ import java.sql.*;
 public class ResponsesFrame extends JFrame {
 
     DashboardFrame dashboard;
+    JComboBox<String> eventBox;
+    DefaultTableModel model;
+    JTable table;
+    int selectedEventId = -1;
 
     public ResponsesFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
+
         setTitle("Guest Responses");
-        setSize(900, 620);
+        setSize(900, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel main = UITheme.createRoseBackground();
-        main.setLayout(new BorderLayout(0, 0));
-        main.add(UITheme.createHeader("RSVP Responses"), BorderLayout.NORTH);
+        main.setLayout(new BorderLayout());
 
-        // ── Table ────────────────────────────────────
-        DefaultTableModel model = new DefaultTableModel(
-            new String[]{"Guest Name", "Response", "Guests Count"}, 0) {
-            public boolean isCellEditable(int r, int c) { return false; }
+        JLabel title = new JLabel("RSVP Responses", SwingConstants.CENTER);
+        title.setFont(new Font("Serif", Font.BOLD, 30));
+        title.setForeground(UITheme.TEXT);
+        title.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
+
+        eventBox = new JComboBox<>();
+        eventBox.setFont(new Font("Serif", Font.PLAIN, 16));
+        eventBox.setBorder(BorderFactory.createTitledBorder("Select Event"));
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
+        topPanel.add(title, BorderLayout.NORTH);
+        topPanel.add(eventBox, BorderLayout.SOUTH);
+
+        model = new DefaultTableModel(
+                new String[]{"Guest Name", "Email", "Response", "Guests Count"}, 0
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
         };
 
-        JTable table = new JTable(model);
-        UITheme.styleTable(table);
+        table = new JTable(model);
+        table.setFont(new Font("Serif", Font.PLAIN, 16));
+        table.setRowHeight(30);
+        table.getTableHeader().setFont(new Font("Serif", Font.BOLD, 16));
+        table.getTableHeader().setBackground(UITheme.PRIMARY);
+        table.getTableHeader().setForeground(Color.WHITE);
 
-        // Center-align "Response" and "Guests Count" columns
-        javax.swing.table.DefaultTableCellRenderer centerRenderer =
-            new javax.swing.table.DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
 
-        JScrollPane scroll = UITheme.createStyledScroll(table);
-        scroll.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(4, 24, 4, 24),
-            BorderFactory.createLineBorder(UITheme.BORDER, 1, true)));
-
-        main.add(scroll, BorderLayout.CENTER);
-
-        // ── Back button ───────────────────────────────
+        JButton refresh = new JButton("Refresh");
         JButton back = new JButton("Back");
-        main.add(UITheme.createButtonBar(back), BorderLayout.SOUTH);
+
+        UITheme.styleButton(refresh);
+        UITheme.styleButton(back);
+
+        JPanel bottom = new JPanel();
+        bottom.setOpaque(false);
+        bottom.setBorder(BorderFactory.createEmptyBorder(10, 10, 20, 10));
+        bottom.add(refresh);
+        bottom.add(back);
+
+        main.add(topPanel, BorderLayout.NORTH);
+        main.add(scroll, BorderLayout.CENTER);
+        main.add(bottom, BorderLayout.SOUTH);
+
         add(main);
 
-        // ── Load data ─────────────────────────────────
-        new Thread(() -> {
-            try {
-                Connection conn = DBConnection.connect();
-                PreparedStatement ps = conn.prepareStatement(
-                    "SELECT name, response, guest_count FROM guests WHERE response IS NOT NULL");
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    String name     = rs.getString("name");
-                    String response = rs.getString("response");
-                    int    count    = rs.getInt("guest_count");
-                    SwingUtilities.invokeLater(() ->
-                        model.addRow(new Object[]{name, response, count}));
-                }
-            } catch (Exception ex) { ex.printStackTrace(); }
-        }).start();
+        loadEvents();
 
-        back.addActionListener(e -> { dashboard.setVisible(true); dispose(); });
+        eventBox.addActionListener(e -> loadResponses());
+
+        refresh.addActionListener(e -> loadResponses());
+
+        back.addActionListener(e -> {
+            dashboard.setVisible(true);
+            dispose();
+        });
+    }
+
+    private void loadEvents() {
+        try {
+            Connection conn = DBConnection.connect();
+
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, name FROM events");
+
+            eventBox.removeAllItems();
+
+            while (rs.next()) {
+                eventBox.addItem(rs.getInt("id") + " : " + rs.getString("name"));
+            }
+
+            if (eventBox.getItemCount() > 0) {
+                eventBox.setSelectedIndex(0);
+                loadResponses();
+            }
+
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading events!");
+        }
+    }
+
+    private void loadResponses() {
+        model.setRowCount(0);
+
+        if (eventBox.getSelectedItem() == null) {
+            return;
+        }
+
+        try {
+            String selected = eventBox.getSelectedItem().toString();
+            selectedEventId = Integer.parseInt(selected.split(":")[0].trim());
+
+            Connection conn = DBConnection.connect();
+
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT name, phone, response, guest_count " +
+                    "FROM guests " +
+                    "WHERE event_id=?"
+            );
+
+            ps.setInt(1, selectedEventId);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                String response = rs.getString("response");
+
+                if (response == null || response.trim().isEmpty()) {
+                    response = "No Response Yet";
+                }
+
+                model.addRow(new Object[]{
+                        rs.getString("name"),
+                        rs.getString("phone"),
+                        response,
+                        rs.getInt("guest_count")
+                });
+            }
+
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading responses!");
+        }
     }
 }
