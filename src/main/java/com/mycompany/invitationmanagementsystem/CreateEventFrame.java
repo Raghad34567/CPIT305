@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.io.FileWriter;
 
 public class CreateEventFrame extends JFrame {
 
@@ -54,7 +53,6 @@ public class CreateEventFrame extends JFrame {
         card.add(title, BorderLayout.NORTH);
         card.add(fields, BorderLayout.CENTER);
         card.add(buttons, BorderLayout.SOUTH);
-
         main.add(card);
         add(main);
 
@@ -81,15 +79,12 @@ public class CreateEventFrame extends JFrame {
                 ps.setInt(4, Integer.parseInt(eventCapacity));
                 ps.executeUpdate();
 
-                FileWriter fw = new FileWriter("events.txt", true);
-                fw.write(eventName + "," + eventDate + "," + eventLocation + "," + eventCapacity + "\n");
-                fw.close();
-
                 JOptionPane.showMessageDialog(this, "Event Created & Saved!");
                 name.setText("");
                 date.setText("");
                 location.setText("");
                 capacity.setText("");
+
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Capacity must be a number");
             } catch (Exception ex) {

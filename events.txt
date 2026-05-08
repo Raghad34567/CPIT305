@@ -1,6 +1,0 @@
-eee,2/2/2020,jeddah,200
-party,20 may 2026,home,15
-party,20 may 2026,home,15
-graduate,1 june 2026,Grand hall,30
-party,12 may 2026,home,46
-lll,2/2/2026,home,69
