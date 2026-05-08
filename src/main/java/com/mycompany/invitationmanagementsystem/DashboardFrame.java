@@ -16,7 +16,6 @@ public class DashboardFrame extends JFrame {
         main.setLayout(new BorderLayout());
         main.add(UITheme.createHeader("Event Management Dashboard"), BorderLayout.NORTH);
 
-        // ✅ أربع بطاقات فقط بعد حذف Send Invitation و Guest Check-In
         JPanel grid = new JPanel(new GridLayout(2, 2, 28, 28));
         grid.setOpaque(false);
         grid.setBorder(BorderFactory.createEmptyBorder(18, 52, 18, 52));

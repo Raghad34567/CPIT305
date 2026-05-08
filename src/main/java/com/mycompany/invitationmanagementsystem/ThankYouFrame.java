@@ -29,7 +29,7 @@ public class ThankYouFrame extends JFrame {
         this.eventDate = eventDate;
         this.eventLocation = eventLocation;
 
-        setTitle(accepted ? "Thank You — Invitation Confirmed" : "Thank You");
+        setTitle(accepted ? "Invitation Confirmed" : "Thank You");
         setSize(660, 480);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -51,7 +51,7 @@ public class ThankYouFrame extends JFrame {
 
         JLabel titleLbl;
         if (accepted) {
-            titleLbl = label("Thank You, " + guestName + "!", Font.BOLD, 26, UITheme.PRIMARY);
+            titleLbl = label("Thank You", Font.BOLD, 26, UITheme.PRIMARY);
         } else {
             titleLbl = label("We Will Miss You,", Font.BOLD, 24, UITheme.PRIMARY);
         }
@@ -81,7 +81,7 @@ public class ThankYouFrame extends JFrame {
             center.add(Box.createVerticalStrut(8));
             center.add(styledRow("Date", eventDate));
             center.add(Box.createVerticalStrut(8));
-            center.add(styledRow("Venue", eventLocation));
+            center.add(styledRow("Location", eventLocation));
             center.add(Box.createVerticalStrut(12));
 
             JLabel wish = label("We look forward to celebrating with you!", Font.ITALIC, 14, UITheme.TEXT_LIGHT);

@@ -9,7 +9,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 public class EmailServer {
 
-    private static final int SERVER_PORT = 5000;
+    private static final int SERVER_PORT = 5002;
 
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final int SMTP_PORT = 465;

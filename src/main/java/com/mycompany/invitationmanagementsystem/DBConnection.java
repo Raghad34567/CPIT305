@@ -8,7 +8,7 @@ public class DBConnection {
         try {
             String url = "jdbc:mysql://localhost:3306/invitation_db?useSSL=false&allowPublicKeyRetrieval=true";
             String user = "root";
-            String password = "1234";
+            String password = "Lturki20";
             Connection con = DriverManager.getConnection(url, user, password);
             return con;
         } catch (Exception e) {
