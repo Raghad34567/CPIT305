@@ -42,7 +42,7 @@ public class RSVPFrame extends JFrame {
         gbc.gridx   = 0;
         gbc.weightx = 1;
 
-        // ── Styled ComboBox ──
+        
         JComboBox<String> response = UITheme.createComboBox("Response");
         response.addItem("Accept with pleasure");
         response.addItem("Regretfully Decline");
@@ -78,7 +78,7 @@ public class RSVPFrame extends JFrame {
         main.add(card);
         add(main);
 
-        // ✅ FIX 1: تم تصحيح الشرط ليتطابق مع القيمة الفعلية في ComboBox
+        
         response.addActionListener(e -> {
             if (response.getSelectedItem() != null &&
                 response.getSelectedItem().toString().equals("Regretfully Decline")) {
@@ -95,7 +95,7 @@ public class RSVPFrame extends JFrame {
             String status     = response.getSelectedItem().toString();
             int    guestCount = 0;
 
-            // ✅ FIX 2: تم تصحيح الشرط ليتطابق مع القيمة الفعلية في ComboBox
+            
             if (status.equals("Accept with pleasure")) {
                 try {
                     guestCount = Integer.parseInt(guests.getText().trim());
@@ -119,9 +119,9 @@ public class RSVPFrame extends JFrame {
                     String eventName     = "Event";
                     String eventDate     = "Date";
                     String eventLocation = "Location";
-                    String guestName     = guestEmail; // fallback لو ما لقى الاسم
+                    String guestName     = guestEmail; // a fallback 
 
-                    // ✅ FIX 3: جلب اسم الضيف الحقيقي من الداتابيس
+                    
                     PreparedStatement namePs = conn.prepareStatement(
                             "SELECT name FROM guests WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))");
                     namePs.setString(1, guestEmail);
@@ -141,7 +141,7 @@ public class RSVPFrame extends JFrame {
                     }
                     conn.close();
 
-                    // ✅ FIX 3 (تابع): تمرير اسم الضيف بدل الإيميل + تصحيح شرط القبول
+                    
                     new ThankYouFrame(
                             status.equals("Accept with pleasure"),
                             guestName,

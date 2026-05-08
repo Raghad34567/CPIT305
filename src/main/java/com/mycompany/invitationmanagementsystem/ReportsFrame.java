@@ -176,7 +176,7 @@ public class ReportsFrame extends JFrame {
         return card;
     }
 
-    // ── Export PDF ────────────────────────────────────────────────────────
+    // Export PDF 
     private void doExportPdf(JButton btn) {
         String eventName = "", eventDate = "", eventLoc = "";
         java.util.List<String[]> guests = new java.util.ArrayList<>();
@@ -250,9 +250,6 @@ public class ReportsFrame extends JFrame {
     }
 
 
-    // =========================================================
-    //  PDF Writer — styled event report
-    // =========================================================
     private void writePdf(File file,
                           String evName, String evDate, String evLoc,
                           String total, String accepted, String declined,
@@ -411,7 +408,7 @@ public class ReportsFrame extends JFrame {
         Files.write(file.toPath(), buf.toByteArray());
     }
 
-    /** Draw a colored stat card box with label + big number */
+    
     private void drawStatBox(StringBuilder cs, int x, int y, String label, String value, String rgbColor) {
         // Box background (light tint)
         cs.append("0.988 0.945 0.957 rg\n");

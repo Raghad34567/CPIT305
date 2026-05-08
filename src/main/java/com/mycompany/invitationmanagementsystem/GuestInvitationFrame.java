@@ -61,12 +61,12 @@ public class GuestInvitationFrame extends JFrame {
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setBorder(BorderFactory.createEmptyBorder(40, 50, 6, 50));
 
-        JLabel tag = new JLabel("— Event Invitation —", SwingConstants.CENTER);
+        JLabel tag = new JLabel("✦ A Special Invitation ✦", SwingConstants.CENTER);
         tag.setFont(new Font("Serif", Font.ITALIC, 13));
         tag.setForeground(new Color(180, 135, 75));
         tag.setAlignmentX(CENTER_ALIGNMENT);
 
-        JLabel mainTitle = new JLabel("You Are Cordially Invited", SwingConstants.CENTER);
+        JLabel mainTitle = new JLabel("Join Us In Celebration", SwingConstants.CENTER);
         mainTitle.setFont(new Font("Serif", Font.BOLD, 30));
         mainTitle.setForeground(UITheme.PRIMARY);
         mainTitle.setAlignmentX(CENTER_ALIGNMENT);
@@ -112,18 +112,26 @@ public class GuestInvitationFrame extends JFrame {
         JPanel centerPanel = new JPanel();
         centerPanel.setOpaque(false);
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(16, 65, 10, 65));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(25, 65, 20, 65));
 
         Object[][] lines = {
-                {"You are invited to attend", 0},
-                {"", 4},
-                {fEventName, 5},
-                {"", 4},
-                {"Date :   " + fEventDate, 2},
-                {"Venue :  " + fEventLocation, 2},
-                {"", 4},
-                {"Please confirm your attendance using RSVP.", 3},
-        };
+            {"We are delighted to invite you to", 3},
+            {"", 4},
+            {"celebrate this special occasion", 0},
+            {"", 4},
+            {fEventName, 5},
+            {"", 4},
+            {"An unforgettable event awaits you.", 0},
+            {"", 4},
+            {"✦  Event Details  ✦", 1},
+            {"", 4},
+            {"📅 Date :   " + fEventDate, 2},
+            {"📍 Venue :  " + fEventLocation, 2},
+            {"", 4},
+            {"Your presence would make this", 3},
+            {"celebration even more meaningful.", 3},
+            {"", 4},
+            {"Kindly confirm your attendance through RSVP.", 3},};
 
         for (Object[] row : lines) {
             String txt = (String) row[0];

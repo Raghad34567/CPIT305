@@ -43,7 +43,7 @@ public class SignUpFrame extends JFrame {
         main.add(UITheme.createButtonBar(signUp, back), BorderLayout.SOUTH);
         add(main);
 
-        // ── Sign Up logic ─────────────────────────────
+        // Sign Up logic
         signUp.addActionListener(e -> {
             String fn  = fullName.getText().trim();
             String usr = username.getText().trim();
@@ -71,7 +71,7 @@ public class SignUpFrame extends JFrame {
             try {
                 Connection conn = DBConnection.connect();
 
-                // username مكرر؟
+                // username
                 PreparedStatement check = conn.prepareStatement(
                     "SELECT id FROM organizers WHERE username = ?");
                 check.setString(1, usr);
@@ -83,7 +83,6 @@ public class SignUpFrame extends JFrame {
                     return;
                 }
 
-                // إدخال الحساب
                 PreparedStatement ps = conn.prepareStatement(
                     "INSERT INTO organizers(full_name, username, password, email) " +
                     "VALUES (?, ?, ?, ?)");

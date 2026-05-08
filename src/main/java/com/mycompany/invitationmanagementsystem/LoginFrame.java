@@ -54,7 +54,7 @@ public class LoginFrame extends JFrame {
         main.add(card);
         add(main);
 
-        // ── Login: يتحقق فقط عند الضغط ──────────────
+        
         login.addActionListener(e -> {
             String usr = username.getText().trim();
             String pw  = new String(password.getPassword());
@@ -96,7 +96,7 @@ public class LoginFrame extends JFrame {
             dispose();
         });
 
-        // ── Sign Up link ──────────────────────────────
+        // Sign Up link
         signUpLink.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 new SignUpFrame().setVisible(true);

@@ -43,7 +43,7 @@ public class RoleSelectionFrame extends JFrame {
         add(main);
 
         organizer.addActionListener(e -> {
-            CreateEventDatabase.setup(); // ينشئ الجداول عند أول ضغطة فقط
+            CreateEventDatabase.setup(); 
             new LoginFrame().setVisible(true);
             dispose();
         });

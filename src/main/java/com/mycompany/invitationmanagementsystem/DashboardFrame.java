@@ -49,7 +49,7 @@ public class DashboardFrame extends JFrame {
         });
     }
 
-    // ── MenuCard ─────────────────────────────────────────────────────────────
+    // MenuCard 
     static class MenuCard extends JPanel {
         private boolean hovered = false;
         private boolean pressed = false;

@@ -112,9 +112,7 @@ public class ThankYouFrame extends JFrame {
         add(main);
     }
 
-    // =========================================================
     //  Save PDF
-    // =========================================================
     private void savePdf(JButton btn) {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Save Invitation PDF");
@@ -150,9 +148,7 @@ public class ThankYouFrame extends JFrame {
         }).start();
     }
 
-    // =========================================================
-    //  PDF Writer — styled invitation card
-    // =========================================================
+    //  PDF Writer
     private void writePdf(File file) throws IOException {
 
         StringBuilder cs = new StringBuilder();
@@ -337,9 +333,7 @@ public class ThankYouFrame extends JFrame {
         buf.write(s.getBytes("ISO-8859-1"));
     }
 
-    // =========================================================
-    //  UI helpers
-    // =========================================================
+  
     private JPanel buildCard() {
         return new JPanel() {
             @Override protected void paintComponent(Graphics g) {

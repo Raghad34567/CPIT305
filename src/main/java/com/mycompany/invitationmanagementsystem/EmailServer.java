@@ -16,8 +16,6 @@ public class EmailServer {
     private static final int    SMTP_PORT      = 465;
     private static final String SENDER_EMAIL   = "invitationmanagementsystem@gmail.com";
     private static final String SENDER_PASSWORD = "xcje knvl vknn uwov";
-
-    // ExecutorService بدل thread واحد — يدعم multiple clients بشكل حقيقي
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
     public static void main(String[] args) {
@@ -51,7 +49,6 @@ public class EmailServer {
             String guestName  = reader.readLine();
             String inviteLink = reader.readLine();
 
-            // Custom exception بدل Exception عام
             if (guestEmail == null || guestName == null || inviteLink == null) {
                 throw new EmailServerException("Incomplete data received from client");
             }
@@ -71,7 +68,7 @@ public class EmailServer {
     }
 
     // =========================================================
-    //  Build a beautiful HTML invitation email and send it
+    // HTML invitation email
     // =========================================================
     private static void sendInvitationEmail(String receiverEmail, String guestName, String inviteLink)
             throws EmailServerException {
@@ -178,7 +175,7 @@ public class EmailServer {
             + "</html>\r\n";
     }
 
-    /** Escape HTML special characters */
+    
     private static String escapeHtml(String s) {
         if (s == null) return "";
         return s.replace("&", "&amp;")

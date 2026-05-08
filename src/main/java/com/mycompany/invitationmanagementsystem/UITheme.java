@@ -116,7 +116,7 @@ public class UITheme {
     }
 
     // ═══════════════════════════════════════════
-    //  STYLED COMBOBOX — متوافق مع macOS ✅
+    //  STYLED COMBOBOX
     // ═══════════════════════════════════════════
     public static JComboBox<String> createComboBox(String label) {
         JComboBox<String> cb = new JComboBox<>();
@@ -125,7 +125,6 @@ public class UITheme {
     }
 
     public static void styleComboBox(JComboBox<String> cb, String label) {
-        // إجبار macOS على استخدام BasicUI بدل AquaUI
         cb.setUI(new BasicComboBoxUI() {
             @Override
             protected JButton createArrowButton() {
@@ -136,7 +135,6 @@ public class UITheme {
                         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                         g2.setColor(new Color(255, 245, 248));
                         g2.fillRect(0, 0, getWidth(), getHeight());
-                        // رسم سهم لأسفل
                         g2.setColor(PRIMARY);
                         int cx = getWidth() / 2;
                         int cy = getHeight() / 2;
@@ -170,7 +168,7 @@ public class UITheme {
         cb.setPreferredSize(new Dimension(200, 42));
         cb.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
 
-        // Renderer للـ items داخل القائمة
+        
         cb.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value,
@@ -190,7 +188,7 @@ public class UITheme {
             }
         });
 
-        // Border مع عنوان
+        // Border 
         cb.setBorder(BorderFactory.createCompoundBorder(
             new TitledBorder(
                 BorderFactory.createLineBorder(BORDER, 1, true),
@@ -201,7 +199,7 @@ public class UITheme {
     }
 
     // ═══════════════════════════════════════════
-    //  STYLED TABLE — موحد ومتناسق ✅
+    //  STYLED TABLE 
     // ═══════════════════════════════════════════
     public static void styleTable(JTable table) {
         table.setFont(new Font("Serif", Font.PLAIN, 15));
