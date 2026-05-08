@@ -22,31 +22,12 @@ public class InvitationLinkFrame extends JFrame {
         title.setForeground(UITheme.TEXT);
         title.setBorder(BorderFactory.createEmptyBorder(30, 10, 20, 10));
 
-        JPanel card = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(0, 0, 0, 25));
-                g2.fillRoundRect(4, 6, getWidth() - 6, getHeight() - 6, 26, 26);
-                g2.setColor(Color.WHITE);
-                g2.fillRoundRect(0, 0, getWidth() - 4, getHeight() - 4, 24, 24);
-                g2.setColor(new Color(200, 150, 160));
-                g2.setStroke(new BasicStroke(1.5f));
-                g2.drawRoundRect(0, 0, getWidth() - 5, getHeight() - 5, 24, 24);
-                g2.dispose();
-            }
-        };
-
-        card.setOpaque(false);
-        card.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel card = UITheme.createCard(480, 180);
         card.setLayout(new BorderLayout(20, 20));
 
         JTextField linkField = new JTextField();
         linkField.setFont(new Font("SansSerif", Font.PLAIN, 18));
         linkField.setBorder(BorderFactory.createLineBorder(UITheme.PRIMARY, 2));
-        linkField.setPreferredSize(new Dimension(400, 50));
 
         JButton openButton = new JButton("Open Invitation");
         JButton logout = new JButton("Logout");
@@ -54,7 +35,7 @@ public class InvitationLinkFrame extends JFrame {
         UITheme.styleButton(openButton);
         UITheme.styleButton(logout);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         buttonPanel.add(openButton);
         buttonPanel.add(logout);
@@ -62,10 +43,7 @@ public class InvitationLinkFrame extends JFrame {
         card.add(linkField, BorderLayout.NORTH);
         card.add(buttonPanel, BorderLayout.CENTER);
 
-        JLabel instruction = new JLabel(
-                "Paste the link sent to you via Email",
-                SwingConstants.CENTER);
-
+        JLabel instruction = new JLabel("Paste the link sent to you via Email", SwingConstants.CENTER);
         instruction.setFont(new Font("SansSerif", Font.PLAIN, 16));
         instruction.setForeground(UITheme.TEXT);
         instruction.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
@@ -73,6 +51,7 @@ public class InvitationLinkFrame extends JFrame {
         main.add(title, BorderLayout.NORTH);
         main.add(card, BorderLayout.CENTER);
         main.add(instruction, BorderLayout.SOUTH);
+
         add(main);
 
         openButton.addActionListener(e -> {
@@ -83,18 +62,24 @@ public class InvitationLinkFrame extends JFrame {
                 return;
             }
 
-            try {
-                String guestEmail = extractGuestEmail(link);
+            String guestEmail = extractGuestEmail(link);
 
-                if (guestEmail.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Invalid link! Guest email not found.");
+            if (guestEmail.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Invalid link! Email not found.");
+                return;
+            }
+
+            try {
+                Connection conn = DBConnection.connect();
+
+                if (conn == null) {
+                    JOptionPane.showMessageDialog(this, "Database connection failed!");
                     return;
                 }
 
-                Connection conn = DBConnection.connect();
-
                 PreparedStatement ps = conn.prepareStatement(
-                        "SELECT name, event_id FROM guests WHERE phone=?");
+                        "SELECT event_id FROM guests WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))"
+                );
 
                 ps.setString(1, guestEmail);
 
@@ -102,17 +87,19 @@ public class InvitationLinkFrame extends JFrame {
 
                 if (rs.next()) {
                     int eventId = rs.getInt("event_id");
-
                     new GuestInvitationFrame(link, eventId).setVisible(true);
                     dispose();
-
                 } else {
-                    JOptionPane.showMessageDialog(this, "Guest not found!");
+                    JOptionPane.showMessageDialog(this,
+                            "Guest not found!\nEmail used: " + guestEmail);
                 }
+
+                conn.close();
 
             } catch (Exception ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Invalid link!");
+                JOptionPane.showMessageDialog(this,
+                        "Database Error!\nCheck if guests table has email column.");
             }
         });
 
@@ -124,19 +111,27 @@ public class InvitationLinkFrame extends JFrame {
 
     private String extractGuestEmail(String link) {
         try {
-            if (link.contains("guestEmail=")) {
-                String email = link.substring(link.indexOf("guestEmail=") + 11);
+            if (link == null) return "";
 
-                if (email.contains("&")) {
-                    email = email.substring(0, email.indexOf("&"));
-                }
+            link = link.trim();
 
-                return URLDecoder.decode(email, StandardCharsets.UTF_8);
+            if (!link.contains("guestEmail=")) {
+                return "";
             }
+
+            String email = link.substring(link.indexOf("guestEmail=") + 11);
+
+            if (email.contains("&")) {
+                email = email.substring(0, email.indexOf("&"));
+            }
+
+            return URLDecoder.decode(email, StandardCharsets.UTF_8)
+                    .trim()
+                    .toLowerCase();
+
         } catch (Exception e) {
             e.printStackTrace();
+            return "";
         }
-
-        return "";
     }
 }

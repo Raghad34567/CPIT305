@@ -10,8 +10,6 @@ public class ResponsesFrame extends JFrame {
     DashboardFrame dashboard;
     JComboBox<String> eventBox;
     DefaultTableModel model;
-    JTable table;
-    int selectedEventId = -1;
 
     public ResponsesFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
@@ -27,7 +25,6 @@ public class ResponsesFrame extends JFrame {
         JLabel title = new JLabel("RSVP Responses", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 30));
         title.setForeground(UITheme.TEXT);
-        title.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
 
         eventBox = new JComboBox<>();
         eventBox.setFont(new Font("Serif", Font.PLAIN, 16));
@@ -35,20 +32,15 @@ public class ResponsesFrame extends JFrame {
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
-        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 10, 40));
         topPanel.add(title, BorderLayout.NORTH);
         topPanel.add(eventBox, BorderLayout.SOUTH);
 
         model = new DefaultTableModel(
                 new String[]{"Guest Name", "Email", "Response", "Guests Count"}, 0
-        ) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        );
 
-        table = new JTable(model);
+        JTable table = new JTable(model);
         table.setFont(new Font("Serif", Font.PLAIN, 16));
         table.setRowHeight(30);
         table.getTableHeader().setFont(new Font("Serif", Font.BOLD, 16));
@@ -66,7 +58,6 @@ public class ResponsesFrame extends JFrame {
 
         JPanel bottom = new JPanel();
         bottom.setOpaque(false);
-        bottom.setBorder(BorderFactory.createEmptyBorder(10, 10, 20, 10));
         bottom.add(refresh);
         bottom.add(back);
 
@@ -79,7 +70,6 @@ public class ResponsesFrame extends JFrame {
         loadEvents();
 
         eventBox.addActionListener(e -> loadResponses());
-
         refresh.addActionListener(e -> loadResponses());
 
         back.addActionListener(e -> {
@@ -117,20 +107,16 @@ public class ResponsesFrame extends JFrame {
     private void loadResponses() {
         model.setRowCount(0);
 
-        if (eventBox.getSelectedItem() == null) {
-            return;
-        }
+        if (eventBox.getSelectedItem() == null) return;
 
         try {
             String selected = eventBox.getSelectedItem().toString();
-            selectedEventId = Integer.parseInt(selected.split(":")[0].trim());
+            int selectedEventId = Integer.parseInt(selected.split(":")[0].trim());
 
             Connection conn = DBConnection.connect();
 
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT name, phone, response, guest_count " +
-                    "FROM guests " +
-                    "WHERE event_id=?"
+                    "SELECT name, email, response, guest_count FROM guests WHERE event_id=?"
             );
 
             ps.setInt(1, selectedEventId);
@@ -146,7 +132,7 @@ public class ResponsesFrame extends JFrame {
 
                 model.addRow(new Object[]{
                         rs.getString("name"),
-                        rs.getString("phone"),
+                        rs.getString("email"),
                         response,
                         rs.getInt("guest_count")
                 });

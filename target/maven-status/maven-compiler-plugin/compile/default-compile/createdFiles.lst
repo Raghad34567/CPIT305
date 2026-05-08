@@ -5,11 +5,10 @@ com\mycompany\invitationmanagementsystem\UITheme$1.class
 com\mycompany\invitationmanagementsystem\UITheme$6.class
 com\mycompany\invitationmanagementsystem\DBConnection.class
 com\mycompany\invitationmanagementsystem\GuestLinkFrame.class
-com\mycompany\invitationmanagementsystem\ResponsesFrame$1.class
 com\mycompany\invitationmanagementsystem\SignUpFrame.class
-com\mycompany\invitationmanagementsystem\InvitationLinkFrame$1.class
 com\mycompany\invitationmanagementsystem\RoleSelectionFrame.class
 com\mycompany\invitationmanagementsystem\UITheme$3.class
+com\mycompany\invitationmanagementsystem\ThankYouFrame.class
 com\mycompany\invitationmanagementsystem\EmailServer.class
 com\mycompany\invitationmanagementsystem\UITheme$8.class
 com\mycompany\invitationmanagementsystem\UITheme$4$1.class
@@ -23,7 +22,9 @@ com\mycompany\invitationmanagementsystem\UITheme$7.class
 com\mycompany\invitationmanagementsystem\ManageGuestsFrame$1.class
 com\mycompany\invitationmanagementsystem\UITheme$2.class
 com\mycompany\invitationmanagementsystem\UITheme$9.class
+com\mycompany\invitationmanagementsystem\ReportsFrame$1.class
 com\mycompany\invitationmanagementsystem\DashboardFrame$MenuCard.class
 com\mycompany\invitationmanagementsystem\UITheme.class
 com\mycompany\invitationmanagementsystem\GuestInvitationFrame$1.class
+com\mycompany\invitationmanagementsystem\ThankYouFrame$1.class
 com\mycompany\invitationmanagementsystem\UITheme$4.class

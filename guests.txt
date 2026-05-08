@@ -4,3 +4,5 @@ Lama2,lama2005.2.23@gmail.com,2
 Raghad,trnmwn1392@gmail.com,3
 lama,lama2005.2.23@gmail.com,1
 ragead,trnmwn1392@gmail.com,1
+lama,lama2005.2.23@gmail.com,2
+lena,zdimondz2004@gmail.com,2

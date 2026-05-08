@@ -4,9 +4,15 @@ public class InvitationManagementSystem {
 
     public static void main(String[] args) {
 
-         CreateEventDatabase.setup();
+        // setup database
+        CreateEventDatabase.setup();
 
-//        new LoginFrame().setVisible(true);
+        // run email server thread
+        new Thread(() -> {
+            EmailServer.main(null);
+        }).start();
+
+        // open system
         new RoleSelectionFrame().setVisible(true);
     }
 }

@@ -4,19 +4,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.net.http.*;
-import java.net.URI;
+import java.sql.ResultSet;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 public class RSVPFrame extends JFrame {
 
     GuestInvitationFrame invitationFrame;
-    String guestName;
-    int    eventId;
+    String guestEmail;
+    int eventId;
 
-    public RSVPFrame(GuestInvitationFrame invitationFrame, String guestName, int eventId) {
+    public RSVPFrame(GuestInvitationFrame invitationFrame, String guestEmail, int eventId) {
         this.invitationFrame = invitationFrame;
-        this.guestName       = guestName;
-        this.eventId         = eventId;
+        this.guestEmail = cleanEmail(guestEmail);
+        this.eventId = eventId;
 
         setTitle("RSVP");
         setSize(700, 550);
@@ -26,80 +27,55 @@ public class RSVPFrame extends JFrame {
         JPanel main = UITheme.createRoseBackground();
         main.setLayout(new GridBagLayout());
 
-        JPanel card = UITheme.createCard(500, 400);
+        JPanel card = UITheme.createCard(500, 380);
         card.setLayout(new BorderLayout(20, 20));
 
-        // ── Title ─────────────────────────────────────
         JLabel title = new JLabel("Kindly Confirm Your Attendance", SwingConstants.CENTER);
-        title.setFont(new Font("Serif", Font.BOLD, 24));
+        title.setFont(new Font("Serif", Font.BOLD, 26));
         title.setForeground(UITheme.TEXT);
-        title.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
 
-        JLabel divider = new JLabel("✦  ───────────────────────────  ✦", SwingConstants.CENTER);
-        divider.setFont(new Font("Serif", Font.PLAIN, 12));
-        divider.setForeground(new Color(185, 125, 148));
-
-        JPanel titlePanel = new JPanel(new BorderLayout(0, 4));
-        titlePanel.setOpaque(false);
-        titlePanel.add(title,   BorderLayout.CENTER);
-        titlePanel.add(divider, BorderLayout.SOUTH);
-
-        // ── Center Fields ─────────────────────────────
-        JPanel centerPanel = new JPanel();
+        JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        // ComboBox مع UITheme styling ✅
-        JComboBox<String> response = UITheme.createComboBox("Attendance Response");
-        response.addItem("Accept with Pleasure");
-        response.addItem("Regretfully Decline");
-        response.setMaximumSize(new Dimension(Integer.MAX_VALUE, 52));
-        response.setAlignmentX(Component.CENTER_ALIGNMENT);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 20, 10, 20);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.weightx = 1;
 
-        centerPanel.add(response);
-        centerPanel.add(Box.createVerticalStrut(16));
+        JComboBox<String> response = new JComboBox<>(new String[]{"Accept", "Decline"});
+        response.setFont(new Font("Serif", Font.PLAIN, 16));
 
-        // حقل عدد الضيوف
+        gbc.gridy = 0;
+        centerPanel.add(response, gbc);
+
         JTextField guests = new JTextField();
         guests.setFont(new Font("Serif", Font.PLAIN, 16));
-        guests.setForeground(UITheme.TEXT);
-        guests.setBackground(new Color(255, 248, 251));
-        guests.setBorder(BorderFactory.createCompoundBorder(
-            new javax.swing.border.TitledBorder(
-                BorderFactory.createLineBorder(UITheme.BORDER, 1, true),
-                " Number of Guests ",
-                javax.swing.border.TitledBorder.LEFT,
-                javax.swing.border.TitledBorder.TOP,
-                new Font("SansSerif", Font.PLAIN, 11),
-                UITheme.TEXT_LIGHT),
-            BorderFactory.createEmptyBorder(4, 10, 6, 10)));
-        guests.setMaximumSize(new Dimension(Integer.MAX_VALUE, 52));
-        guests.setAlignmentX(Component.CENTER_ALIGNMENT);
+        guests.setBorder(BorderFactory.createTitledBorder("Number of Guests"));
 
-        centerPanel.add(guests);
+        gbc.gridy = 1;
+        centerPanel.add(guests, gbc);
 
-        // ── Buttons ───────────────────────────────────
         JButton submit = new JButton("Submit Response");
-        JButton back   = new JButton("Back");
+        JButton back = new JButton("Back");
+
         UITheme.styleButton(submit);
         UITheme.styleButton(back);
 
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 16, 12));
+        JPanel bottomPanel = new JPanel();
         bottomPanel.setOpaque(false);
         bottomPanel.add(submit);
         bottomPanel.add(back);
 
-        card.add(titlePanel,   BorderLayout.NORTH);
-        card.add(centerPanel,  BorderLayout.CENTER);
-        card.add(bottomPanel,  BorderLayout.SOUTH);
+        card.add(title, BorderLayout.NORTH);
+        card.add(centerPanel, BorderLayout.CENTER);
+        card.add(bottomPanel, BorderLayout.SOUTH);
 
         main.add(card);
         add(main);
 
-        // ── Logic ─────────────────────────────────────
         response.addActionListener(e -> {
-            if (response.getSelectedItem().toString().contains("Decline")) {
+            if (response.getSelectedItem().toString().equals("Decline")) {
                 guests.setText("0");
                 guests.setEnabled(false);
             } else {
@@ -109,64 +85,103 @@ public class RSVPFrame extends JFrame {
         });
 
         submit.addActionListener(e -> {
-            String status     = response.getSelectedItem().toString();
-            String input      = guests.getText().trim();
-            int    guestCount = 0;
+            String status = response.getSelectedItem().toString();
+            int guestCount = 0;
 
-            if (status.contains("Accept")) {
-                if (input.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Enter number of guests");
-                    return;
-                }
+            if (status.equals("Accept")) {
                 try {
-                    guestCount = Integer.parseInt(input);
+                    guestCount = Integer.parseInt(guests.getText().trim());
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Invalid number");
+                    JOptionPane.showMessageDialog(this, "Enter valid number");
                     return;
                 }
             }
 
-            int finalGuestCount = guestCount;
-            new Thread(() -> {
-                try {
-                    Connection conn = DBConnection.connect();
-                    PreparedStatement ps = conn.prepareStatement(
-                        "UPDATE guests SET response=?, guest_count=? WHERE name=? AND event_id=?");
-                    ps.setString(1, status);
-                    ps.setInt(2, finalGuestCount);
-                    ps.setString(3, guestName);
-                    ps.setInt(4, eventId);
-                    ps.executeUpdate();
+            try {
+                Connection conn = DBConnection.connect();
 
-                    try {
-                        String data = "name=" + guestName + "&response=" + status;
-                        HttpClient client = HttpClient.newHttpClient();
-                        HttpRequest request = HttpRequest.newBuilder()
-                            .POST(HttpRequest.BodyPublishers.ofString(data))
-                            .uri(URI.create("https://postman-echo.com/post"))
-                            .setHeader("Content-Type", "application/x-www-form-urlencoded")
-                            .build();
-                        HttpResponse<String> responseNet = client.send(
-                            request, HttpResponse.BodyHandlers.ofString());
-                        System.out.println(responseNet.body());
-                    } catch (Exception netEx) {
-                        netEx.printStackTrace();
+                PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE guests SET response=?, guest_count=? " +
+                        "WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))"
+                );
+
+                ps.setString(1, status);
+                ps.setInt(2, guestCount);
+                ps.setString(3, guestEmail);
+
+                int rows = ps.executeUpdate();
+
+                if (rows > 0) {
+                    String eventName = "Event";
+                    String eventDate = "Date";
+                    String eventLocation = "Location";
+
+                    PreparedStatement eventPs = conn.prepareStatement(
+                            "SELECT name, date, location FROM events WHERE id=?"
+                    );
+
+                    eventPs.setInt(1, eventId);
+                    ResultSet rs = eventPs.executeQuery();
+
+                    if (rs.next()) {
+                        eventName = rs.getString("name");
+                        eventDate = rs.getString("date");
+                        eventLocation = rs.getString("location");
                     }
 
-                    SwingUtilities.invokeLater(() ->
-                        JOptionPane.showMessageDialog(this, "Response saved & sent!"));
+                    conn.close();
 
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    SwingUtilities.invokeLater(() ->
-                        JOptionPane.showMessageDialog(this, "Database Error!"));
+                    new ThankYouFrame(
+                            status.equals("Accept"),
+                            guestEmail,
+                            eventName,
+                            eventDate,
+                            eventLocation
+                    ).setVisible(true);
+
+                    dispose();
+
+                } else {
+                    conn.close();
+
+                    JOptionPane.showMessageDialog(this,
+                            "Guest not found!\nEmail used: " + guestEmail);
                 }
-            }).start();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Database Error!");
+            }
         });
 
         back.addActionListener(e -> {
             invitationFrame.setVisible(true);
             dispose();
         });
+    }
+
+    private String cleanEmail(String text) {
+        try {
+            if (text == null) {
+                return "";
+            }
+
+            text = text.trim();
+
+            if (text.contains("guestEmail=")) {
+                text = text.substring(text.indexOf("guestEmail=") + "guestEmail=".length());
+
+                if (text.contains("&")) {
+                    text = text.substring(0, text.indexOf("&"));
+                }
+            }
+
+            text = URLDecoder.decode(text, StandardCharsets.UTF_8);
+
+            return text.trim().toLowerCase();
+
+        } catch (Exception e) {
+            return text.trim().toLowerCase();
+        }
     }
 }
