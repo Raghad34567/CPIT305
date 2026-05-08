@@ -44,8 +44,8 @@ public class RSVPFrame extends JFrame {
 
         // ── Styled ComboBox ──
         JComboBox<String> response = UITheme.createComboBox("Response");
-        response.addItem("Accept");
-        response.addItem("Decline");
+        response.addItem("Accept with pleasure");
+        response.addItem("Regretfully Decline");
         gbc.gridy = 0;
         centerPanel.add(response, gbc);
 

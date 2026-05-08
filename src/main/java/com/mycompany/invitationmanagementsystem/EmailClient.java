@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 public class EmailClient {
 
     private static final String SERVER_HOST = "localhost";
-    private static final int SERVER_PORT = 5000;
+    private static final int SERVER_PORT = 5002;
 
     public static void sendInvitationRequest(String guestEmail, String guestName, String inviteLink) throws IOException {
 
