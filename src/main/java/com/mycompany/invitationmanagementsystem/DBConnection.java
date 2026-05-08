@@ -4,16 +4,35 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class DBConnection {
-    public static Connection connect() {
+
+    private static final String URL  = "jdbc:mysql://localhost:3306/invitation_db?useSSL=false&allowPublicKeyRetrieval=true";
+    private static final String USER = "root";
+    private static final String PASS = "Lturki20";
+
+    // 
+    public static Connection connect() throws DatabaseConnectionException {
         try {
-            String url = "jdbc:mysql://localhost:3306/invitation_db?useSSL=false&allowPublicKeyRetrieval=true";
-            String user = "root";
-            String password = "1234";
-            Connection con = DriverManager.getConnection(url, user, password);
+            Connection con = DriverManager.getConnection(URL, USER, PASS);
             return con;
         } catch (Exception e) {
-            System.out.println(e);
-            return null;
+            throw new DatabaseConnectionException("Cannot connect to database: " + e.getMessage());
+        }
+    }
+    
+    //Custom Exception
+    static class DatabaseConnectionException
+            extends Exception {
+
+        public DatabaseConnectionException(String message) {
+            super(message);
+        }
+
+        public DatabaseConnectionException(
+                String message,
+                Throwable cause) {
+
+            super(message, cause);
         }
     }
 }
+    

@@ -80,7 +80,7 @@ public class RSVPFrame extends JFrame {
 
         response.addActionListener(e -> {
             if (response.getSelectedItem() != null &&
-                response.getSelectedItem().toString().equals("Decline")) {
+                response.getSelectedItem().toString().equals("Declined")) {
                 guests.setText("0");
                 guests.setEnabled(false);
             } else {
@@ -93,7 +93,7 @@ public class RSVPFrame extends JFrame {
             if (response.getSelectedItem() == null) return;
             String status     = response.getSelectedItem().toString();
             int    guestCount = 0;
-            if (status.equals("Accept")) {
+            if (status.equals("Accepted")) {
                 try {
                     guestCount = Integer.parseInt(guests.getText().trim());
                 } catch (Exception ex) {
@@ -125,7 +125,7 @@ public class RSVPFrame extends JFrame {
                     }
                     conn.close();
                     new ThankYouFrame(
-                            status.equals("Accept"),
+                            status.equals("Accepted"),
                             guestEmail,
                             eventName,
                             eventDate,

@@ -7,7 +7,7 @@ import java.awt.event.*;
 public class DashboardFrame extends JFrame {
 
     public DashboardFrame() {
-        setTitle("Wedding Dashboard");
+        setTitle("Dashboard");
         setSize(950, 660);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
