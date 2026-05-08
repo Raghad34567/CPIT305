@@ -1,215 +1,235 @@
 package com.mycompany.invitationmanagementsystem;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
 import java.awt.geom.*;
 
 public class UITheme {
 
-    // Wedding Luxury Colors
-    public static Color PRIMARY    = new Color(139, 20, 60);   // Deep Rose
-    public static Color BACKGROUND = new Color(255, 248, 248); // Soft blush
-    public static Color CARD       = new Color(255, 255, 255);
-    public static Color TEXT       = new Color(60, 30, 40);
+    public static final Color PRIMARY    = new Color(139, 20,  60);
+    public static final Color PRIMARY_LT = new Color(168, 40,  80);
+    public static final Color PRIMARY_DK = new Color(100,  8,  38);
+    public static final Color CARD       = new Color(255, 252, 250);
+    public static final Color TEXT       = new Color( 55, 25,  38);
+    public static final Color TEXT_LIGHT = new Color(140, 85, 108);
+    public static final Color BORDER     = new Color(210, 162, 178);
+    public static final Color GOLD       = new Color(198, 155,  80);
 
-    // ──────────────────────────────────────────────
-    //  BUTTON STYLE  (visible on macOS & Windows)
-    // ──────────────────────────────────────────────
-    public static void styleButton(JButton button) {
-        button.setOpaque(false);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
-        button.setForeground(Color.WHITE);
-        button.setFont(new Font("Serif", Font.BOLD, 16));
-        button.setFocusPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setBorder(BorderFactory.createEmptyBorder(10, 28, 10, 28));
+    // Legacy aliases so old code that uses Color (non-final) still compiles
+    public static Color BACKGROUND = new Color(255, 248, 248);
 
-        button.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
-            @Override
-            public void paint(Graphics g, JComponent c) {
+    // ═══════════════════════════════════════════
+    //  PILL BUTTON
+    // ═══════════════════════════════════════════
+    public static void styleButton(JButton btn) {
+        btn.setOpaque(false);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setFont(new Font("Serif", Font.BOLD, 15));
+        btn.setForeground(Color.WHITE);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.setBorder(BorderFactory.createEmptyBorder(11, 34, 11, 34));
+
+        btn.setUI(new javax.swing.plaf.basic.BasicButtonUI() {
+            @Override public void paint(Graphics g, JComponent c) {
                 JButton b = (JButton) c;
                 Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                    RenderingHints.VALUE_ANTIALIAS_ON);
-                int w = b.getWidth(), h = b.getHeight();
-                int arc = h; // true pill shape
-
-                Object hover   = b.getClientProperty("hovered");
-                Object pressed = b.getClientProperty("pressed");
-                Color bg = Boolean.TRUE.equals(pressed)
-                    ? new Color(110, 10, 45)
-                    : Boolean.TRUE.equals(hover)
-                        ? new Color(170, 30, 75)
-                        : PRIMARY;
-
-                // shadow
-                g2.setColor(new Color(0, 0, 0, 35));
-                g2.fillRoundRect(2, 4, w - 3, h - 3, arc, arc);
-                // fill
-                g2.setColor(bg);
-                g2.fillRoundRect(0, 0, w - 2, h - 2, arc, arc);
-                // border
-                g2.setColor(new Color(100, 10, 40));
-                g2.setStroke(new BasicStroke(1.6f));
-                g2.drawRoundRect(0, 0, w - 3, h - 3, arc, arc);
-                // text
-                FontMetrics fm = g2.getFontMetrics(b.getFont());
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                int w = b.getWidth(), h = b.getHeight(), arc = h;
+                boolean hov = Boolean.TRUE.equals(b.getClientProperty("hov"));
+                boolean prs = Boolean.TRUE.equals(b.getClientProperty("prs"));
+                Color fill = prs ? PRIMARY_DK : hov ? PRIMARY_LT : PRIMARY;
+                g2.setColor(new Color(100, 0, 30, 40));
+                g2.fillRoundRect(2, 4, w-2, h-2, arc, arc);
+                g2.setColor(fill);
+                g2.fillRoundRect(0, 0, w-2, h-2, arc, arc);
+                g2.setColor(new Color(255,255,255,25));
+                g2.fillRoundRect(5, 2, w-12, h/2, arc, arc);
+                g2.setColor(PRIMARY_DK);
+                g2.setStroke(new BasicStroke(1.3f));
+                g2.drawRoundRect(0, 0, w-3, h-3, arc, arc);
                 g2.setFont(b.getFont());
                 g2.setColor(Color.WHITE);
-                String text = b.getText();
-                int tx = (w - fm.stringWidth(text)) / 2;
-                int ty = (h - fm.getHeight()) / 2 + fm.getAscent();
-                g2.drawString(text, tx, ty);
+                FontMetrics fm = g2.getFontMetrics();
+                String txt = b.getText();
+                g2.drawString(txt, (w-fm.stringWidth(txt))/2, (h-fm.getHeight())/2+fm.getAscent());
                 g2.dispose();
             }
         });
 
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                button.putClientProperty("hovered", Boolean.TRUE);
-                button.repaint();
-            }
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                button.putClientProperty("hovered", Boolean.FALSE);
-                button.putClientProperty("pressed", Boolean.FALSE);
-                button.repaint();
-            }
-            public void mousePressed(java.awt.event.MouseEvent e) {
-                button.putClientProperty("pressed", Boolean.TRUE);
-                button.repaint();
-            }
-            public void mouseReleased(java.awt.event.MouseEvent e) {
-                button.putClientProperty("pressed", Boolean.FALSE);
-                button.repaint();
-            }
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered (java.awt.event.MouseEvent e) { btn.putClientProperty("hov",true);  btn.repaint(); }
+            public void mouseExited  (java.awt.event.MouseEvent e) { btn.putClientProperty("hov",false); btn.putClientProperty("prs",false); btn.repaint(); }
+            public void mousePressed (java.awt.event.MouseEvent e) { btn.putClientProperty("prs",true);  btn.repaint(); }
+            public void mouseReleased(java.awt.event.MouseEvent e) { btn.putClientProperty("prs",false); btn.repaint(); }
         });
     }
 
-    // ──────────────────────────────────────────────
-    //  CARD PANEL
-    // ──────────────────────────────────────────────
-    public static JPanel createCard(int width, int height) {
-        JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
+    // ═══════════════════════════════════════════
+    //  ROUNDED CARD
+    // ═══════════════════════════════════════════
+    public static JPanel createCard(int w, int h) {
+        JPanel p = new JPanel() {
+            @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                    RenderingHints.VALUE_ANTIALIAS_ON);
-                // subtle card shadow
-                g2.setColor(new Color(180, 100, 120, 40));
-                g2.fillRoundRect(4, 6, getWidth() - 6, getHeight() - 6, 30, 30);
-                // card body
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(155,75,105,32));
+                g2.fillRoundRect(5,7,getWidth()-7,getHeight()-7,32,32);
                 g2.setColor(CARD);
-                g2.fillRoundRect(0, 0, getWidth() - 4, getHeight() - 4, 28, 28);
-                // border
-                g2.setColor(new Color(200, 150, 160));
-                g2.setStroke(new BasicStroke(1.5f));
-                g2.drawRoundRect(0, 0, getWidth() - 5, getHeight() - 5, 28, 28);
+                g2.fillRoundRect(0,0,getWidth()-5,getHeight()-5,30,30);
+                g2.setColor(BORDER);
+                g2.setStroke(new BasicStroke(1.2f));
+                g2.drawRoundRect(0,0,getWidth()-6,getHeight()-6,30,30);
                 g2.dispose();
             }
         };
-        panel.setOpaque(false);
-        panel.setPreferredSize(new Dimension(width, height));
-        panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        panel.setLayout(new GridLayout(0, 1, 18, 18));
-        return panel;
+        p.setOpaque(false);
+        p.setPreferredSize(new Dimension(w,h));
+        p.setBorder(BorderFactory.createEmptyBorder(28,32,28,32));
+        p.setLayout(new GridLayout(0,1,16,16));
+        return p;
     }
 
-    // ──────────────────────────────────────────────
-    //  ROSE BACKGROUND PANEL  (all static, no animation)
-    // ──────────────────────────────────────────────
+    // ═══════════════════════════════════════════
+    //  STYLED INPUT FIELD
+    // ═══════════════════════════════════════════
+    public static JTextField createField(String label) {
+        JTextField f = new JTextField();
+        applyFieldStyle(f, label);
+        return f;
+    }
+
+    public static JPasswordField createPassField(String label) {
+        JPasswordField f = new JPasswordField();
+        applyFieldStyle(f, label);
+        return f;
+    }
+
+    private static void applyFieldStyle(JTextField f, String label) {
+        f.setFont(new Font("Serif", Font.PLAIN, 16));
+        f.setForeground(TEXT);
+        f.setBackground(new Color(255,250,252));
+        f.setBorder(BorderFactory.createCompoundBorder(
+            new TitledBorder(BorderFactory.createLineBorder(BORDER,1,true),
+                " "+label+" ", TitledBorder.LEFT, TitledBorder.TOP,
+                new Font("SansSerif",Font.PLAIN,11), TEXT_LIGHT),
+            BorderFactory.createEmptyBorder(2,8,4,8)));
+    }
+
+    // ═══════════════════════════════════════════
+    //  STYLED COMBOBOX
+    // ═══════════════════════════════════════════
+    public static JComboBox<String> createComboBox(String label) {
+        JComboBox<String> cb = new JComboBox<>();
+        cb.setFont(new Font("Serif", Font.PLAIN, 15));
+        cb.setForeground(TEXT);
+        cb.setBackground(new Color(255,250,252));
+        cb.setBorder(BorderFactory.createCompoundBorder(
+            new TitledBorder(BorderFactory.createLineBorder(BORDER,1,true),
+                " "+label+" ", TitledBorder.LEFT, TitledBorder.TOP,
+                new Font("SansSerif",Font.PLAIN,11), TEXT_LIGHT),
+            BorderFactory.createEmptyBorder(2,4,4,4)));
+        return cb;
+    }
+
+    // ═══════════════════════════════════════════
+    //  STYLED TABLE
+    // ═══════════════════════════════════════════
+    public static void styleTable(JTable table) {
+        table.setFont(new Font("Serif", Font.PLAIN, 15));
+        table.setForeground(TEXT);
+        table.setBackground(new Color(255,252,254));
+        table.setRowHeight(32);
+        table.setGridColor(new Color(225,190,205));
+        table.setSelectionBackground(new Color(220,160,180));
+        table.setSelectionForeground(Color.WHITE);
+        table.getTableHeader().setFont(new Font("Serif", Font.BOLD, 15));
+        table.getTableHeader().setBackground(PRIMARY);
+        table.getTableHeader().setForeground(Color.WHITE);
+        table.getTableHeader().setBorder(BorderFactory.createEmptyBorder());
+    }
+
+    public static JScrollPane createStyledScroll(JTable table) {
+        styleTable(table);
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.setOpaque(false);
+        scroll.getViewport().setBackground(new Color(255,252,254));
+        scroll.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(0,16,0,16),
+            BorderFactory.createLineBorder(BORDER,1,true)));
+        return scroll;
+    }
+
+    // ═══════════════════════════════════════════
+    //  PAGE HEADER
+    // ═══════════════════════════════════════════
+    public static JPanel createHeader(String titleText) {
+        JPanel p = new JPanel(new BorderLayout(0,6));
+        p.setOpaque(false);
+        p.setBorder(BorderFactory.createEmptyBorder(22,0,10,0));
+        JLabel t = new JLabel(titleText, SwingConstants.CENTER);
+        t.setFont(new Font("Serif", Font.BOLD, 28));
+        t.setForeground(TEXT);
+        JLabel div = new JLabel("✦  ─────────────────────────────────────  ✦", SwingConstants.CENTER);
+        div.setFont(new Font("Serif", Font.PLAIN, 13));
+        div.setForeground(new Color(185,125,148));
+        p.add(t,   BorderLayout.CENTER);
+        p.add(div, BorderLayout.SOUTH);
+        return p;
+    }
+
+    // ═══════════════════════════════════════════
+    //  BUTTON BAR
+    // ═══════════════════════════════════════════
+    public static JPanel createButtonBar(JButton... btns) {
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER,18,10));
+        p.setOpaque(false);
+        p.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
+        for (JButton b : btns) { styleButton(b); p.add(b); }
+        return p;
+    }
+
+    // ═══════════════════════════════════════════
+    //  ROSE BACKGROUND (static)
+    // ═══════════════════════════════════════════
     public static JPanel createRoseBackground() {
         return new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
+            @Override protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                    RenderingHints.VALUE_ANTIALIAS_ON);
-
-                // Gradient background
-                GradientPaint grad = new GradientPaint(
-                    0, 0, new Color(255, 240, 244),
-                    getWidth(), getHeight(), new Color(250, 225, 235)
-                );
-                g2.setPaint(grad);
-                g2.fillRect(0, 0, getWidth(), getHeight());
-
-                // Draw static roses at fixed positions
-                int[][] positions = {
-                    {30, 30}, {getWidth()-80, 20}, {15, getHeight()-80},
-                    {getWidth()-70, getHeight()-80}, {getWidth()/2 - 60, 15},
-                    {getWidth()/2 + 40, getHeight()-70}, {60, getHeight()/2 - 40},
-                    {getWidth()-90, getHeight()/2 + 20}
-                };
-                int[] sizes  = {52, 46, 50, 44, 48, 46, 44, 50};
-                float[] alphas= {0.28f, 0.22f, 0.25f, 0.20f, 0.24f, 0.22f, 0.20f, 0.26f};
-
-                for (int i = 0; i < positions.length; i++) {
-                    drawRose(g2, positions[i][0], positions[i][1], sizes[i], alphas[i]);
-                }
-
-                // Small accent roses
-                int[][] small = {
-                    {getWidth()/4, 8}, {3*getWidth()/4, getHeight()-40},
-                    {10, getHeight()/3}, {getWidth()-30, 2*getHeight()/3}
-                };
-                for (int[] p : small) {
-                    drawRose(g2, p[0], p[1], 28, 0.16f);
-                }
-
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(new GradientPaint(0,0,new Color(255,242,246),getWidth(),getHeight(),new Color(250,228,238)));
+                g2.fillRect(0,0,getWidth(),getHeight());
+                int W=getWidth(), H=getHeight();
+                int[][] pos={{28,28},{W-75,18},{12,H-75},{W-68,H-75},{W/2-55,12},{W/2+38,H-68},{55,H/2-38},{W-88,H/2+18}};
+                int[]   sz ={54,48,52,46,50,48,46,52};
+                float[] al ={.28f,.22f,.25f,.20f,.24f,.22f,.20f,.26f};
+                for (int i=0;i<pos.length;i++) rose(g2,pos[i][0],pos[i][1],sz[i],al[i]);
+                int[][] sm={{W/4,6},{3*W/4,H-38},{8,H/3},{W-28,2*H/3}};
+                for (int[] p:sm) rose(g2,p[0],p[1],28,.15f);
                 g2.dispose();
             }
-
-            private void drawRose(Graphics2D g2, int cx, int cy, int r, float alpha) {
-                g2 = (Graphics2D) g2.create();
-                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-
-                int petals = 5;
-                double petalW = Math.toRadians(38);
-                Color petal1 = new Color(210, 60, 100);
-                Color petal2 = new Color(240, 120, 150);
-
-                // outer petals
-                for (int p = 0; p < petals; p++) {
-                    double angle = Math.toRadians(p * (360.0 / petals)) - Math.PI / 2;
-                    int px = (int) (cx + (r * 0.55) * Math.cos(angle));
-                    int py = (int) (cy + (r * 0.55) * Math.sin(angle));
-                    int pw = (int) (r * 0.75);
-                    int ph = (int) (r * 0.55);
-                    GradientPaint gp = new GradientPaint(px, py, petal1,
-                                                         px + pw / 2, py + ph / 2, petal2);
-                    g2.setPaint(gp);
-                    Shape petal = createPetal(px - pw / 2, py - ph / 2, pw, ph, angle);
-                    g2.fill(petal);
+            private void rose(Graphics2D g2,int cx,int cy,int r,float a) {
+                Graphics2D g=(Graphics2D)g2.create();
+                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,a));
+                for (int i=0;i<5;i++) {
+                    double ang=Math.toRadians(i*72)-Math.PI/2;
+                    int px=(int)(cx+r*.55*Math.cos(ang)),py=(int)(cy+r*.55*Math.sin(ang));
+                    int pw=(int)(r*.75),ph=(int)(r*.55);
+                    g.setPaint(new GradientPaint(px,py,new Color(208,52,92),px+pw/2,py+ph/2,new Color(236,112,142)));
+                    g.fill(AffineTransform.getRotateInstance(ang,px,py).createTransformedShape(new Ellipse2D.Double(px-pw/2.,py-ph/2.,pw,ph)));
                 }
-
-                // inner petals
-                for (int p = 0; p < petals; p++) {
-                    double angle = Math.toRadians(p * (360.0 / petals));
-                    int px = (int) (cx + (r * 0.28) * Math.cos(angle));
-                    int py = (int) (cy + (r * 0.28) * Math.sin(angle));
-                    int pw = (int) (r * 0.50);
-                    int ph = (int) (r * 0.38);
-                    g2.setColor(new Color(220, 80, 115));
-                    Shape petal = createPetal(px - pw / 2, py - ph / 2, pw, ph, angle);
-                    g2.fill(petal);
+                for (int i=0;i<5;i++) {
+                    double ang=Math.toRadians(i*72);
+                    int px=(int)(cx+r*.28*Math.cos(ang)),py=(int)(cy+r*.28*Math.sin(ang));
+                    int pw=(int)(r*.50),ph=(int)(r*.38);
+                    g.setColor(new Color(216,72,108));
+                    g.fill(AffineTransform.getRotateInstance(ang,px,py).createTransformedShape(new Ellipse2D.Double(px-pw/2.,py-ph/2.,pw,ph)));
                 }
-
-                // centre
-                g2.setColor(new Color(180, 40, 80));
-                int cr = (int)(r * 0.22);
-                g2.fillOval(cx - cr, cy - cr, cr * 2, cr * 2);
-
-                g2.dispose();
-            }
-
-            private Shape createPetal(int x, int y, int w, int h, double angle) {
-                Ellipse2D.Double e = new Ellipse2D.Double(x, y, w, h);
-                AffineTransform at = AffineTransform.getRotateInstance(
-                    angle, x + w / 2.0, y + h / 2.0);
-                return at.createTransformedShape(e);
+                int cr=(int)(r*.22); g.setColor(new Color(172,32,72)); g.fillOval(cx-cr,cy-cr,cr*2,cr*2);
+                g.dispose();
             }
         };
     }

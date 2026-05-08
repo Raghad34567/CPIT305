@@ -2,108 +2,123 @@ package com.mycompany.invitationmanagementsystem;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class DashboardFrame extends JFrame {
 
     public DashboardFrame() {
-
         setTitle("Wedding Dashboard");
-        setSize(950, 650);
+        setSize(950, 660);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JPanel main = new JPanel(new BorderLayout());
-        main.setBackground(UITheme.BACKGROUND);
+        JPanel main = UITheme.createRoseBackground();
+        main.setLayout(new BorderLayout());
 
-        // ===== Header =====
-        JLabel header = new JLabel("Wedding Management Dashboard", SwingConstants.CENTER);
-        header.setFont(new Font("Serif", Font.BOLD, 30));
-        header.setForeground(UITheme.TEXT);
-        header.setBorder(BorderFactory.createEmptyBorder(30, 0, 30, 0));
+        main.add(UITheme.createHeader("Wedding Management Dashboard"), BorderLayout.NORTH);
 
-        // ===== Buttons Grid =====
-        JPanel buttons = new JPanel(new GridLayout(2, 3, 40, 40));
-        buttons.setBackground(UITheme.BACKGROUND);
-        buttons.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
+        JPanel grid = new JPanel(new GridLayout(2, 3, 28, 28));
+        grid.setOpaque(false);
+        grid.setBorder(BorderFactory.createEmptyBorder(18, 52, 18, 52));
 
-        JButton createEvent = new JButton("Create Event");
-        JButton manageGuests = new JButton("Manage Guests");
-        JButton sendInvitations = new JButton("Send Invitation");
-        JButton viewResponses = new JButton("View Response");
-        JButton reports = new JButton("Reports");
-        JButton guestCheckIn = new JButton("Guest Check-In");
+        MenuCard createEvent     = new MenuCard("Create Event");
+        MenuCard manageGuests    = new MenuCard("Manage Guests");
+        MenuCard sendInvitations = new MenuCard("Send Invitation");
+        MenuCard viewResponses   = new MenuCard("View Response");
+        MenuCard reports         = new MenuCard("Reports");
+        MenuCard guestCheckIn    = new MenuCard("Guest Check-In");
 
-        UITheme.styleButton(createEvent);
-        UITheme.styleButton(manageGuests);
-        UITheme.styleButton(sendInvitations);
-        UITheme.styleButton(viewResponses);
-        UITheme.styleButton(reports);
-        UITheme.styleButton(guestCheckIn);
+        grid.add(createEvent);
+        grid.add(manageGuests);
+        grid.add(sendInvitations);
+        grid.add(viewResponses);
+        grid.add(reports);
+        grid.add(guestCheckIn);
 
-        Dimension btnSize = new Dimension(200, 200);
-        createEvent.setPreferredSize(btnSize);
-        manageGuests.setPreferredSize(btnSize);
-        sendInvitations.setPreferredSize(btnSize);
-        viewResponses.setPreferredSize(btnSize);
-        reports.setPreferredSize(btnSize);
-        guestCheckIn.setPreferredSize(btnSize);
+        main.add(grid, BorderLayout.CENTER);
 
-        buttons.add(createEvent);
-        buttons.add(manageGuests);
-        buttons.add(sendInvitations);
-        buttons.add(viewResponses);
-        buttons.add(reports);
-        buttons.add(guestCheckIn);
-
-        // ===== Logout button =====
         JButton logout = new JButton("Logout");
-        UITheme.styleButton(logout);
-        logout.setPreferredSize(new Dimension(120, 40));
-
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(UITheme.BACKGROUND);
-        bottomPanel.add(logout);
-
-        main.add(header, BorderLayout.NORTH);
-        main.add(buttons, BorderLayout.CENTER);
-        main.add(bottomPanel, BorderLayout.SOUTH);
-
+        main.add(UITheme.createButtonBar(logout), BorderLayout.SOUTH);
         add(main);
 
-        createEvent.addActionListener(e -> {
-            new CreateEventFrame(this).setVisible(true);
-            setVisible(false);
-        });
-
-        manageGuests.addActionListener(e -> {
-            new ManageGuestsFrame(this).setVisible(true);
-            setVisible(false);
-        });
-
-        sendInvitations.addActionListener(e -> {
-            new GuestLinkFrame(this).setVisible(true);
-            setVisible(false);
-        });
-
-        viewResponses.addActionListener(e -> {
-            new ResponsesFrame(this).setVisible(true);
-            setVisible(false);
-        });
-
-        reports.addActionListener(e -> {
-            new ReportsFrame(this).setVisible(true);
-            setVisible(false);
-        });
-
-        guestCheckIn.addActionListener(e -> {
-            new CheckInFrame(this).setVisible(true);
-            setVisible(false);
-        });
-
+        createEvent.onClick(e     -> { new CreateEventFrame(this).setVisible(true);  setVisible(false); });
+        manageGuests.onClick(e    -> { new ManageGuestsFrame(this).setVisible(true); setVisible(false); });
+        sendInvitations.onClick(e -> { new GuestLinkFrame(this).setVisible(true);    setVisible(false); });
+        viewResponses.onClick(e   -> { new ResponsesFrame(this).setVisible(true);    setVisible(false); });
+        reports.onClick(e         -> { new ReportsFrame(this).setVisible(true);      setVisible(false); });
+        guestCheckIn.onClick(e    -> { new CheckInFrame(this).setVisible(true);      setVisible(false); });
         logout.addActionListener(e -> {
             JOptionPane.showMessageDialog(this, "Logged out successfully");
             new RoleSelectionFrame().setVisible(true);
             dispose();
         });
+    }
+
+    // ── MenuCard: JPanel يتصرف كزر ─────────────────
+    static class MenuCard extends JPanel {
+
+        private boolean hovered = false;
+        private boolean pressed = false;
+        private final String text;
+        private ActionListener listener;
+
+        MenuCard(String text) {
+            this.text = text;
+            setOpaque(false);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e)  { hovered = true;  repaint(); }
+                public void mouseExited (MouseEvent e)  { hovered = false; pressed = false; repaint(); }
+                public void mousePressed(MouseEvent e)  { pressed = true;  repaint(); }
+                public void mouseReleased(MouseEvent e) {
+                    pressed = false; repaint();
+                    if (listener != null && contains(e.getPoint()))
+                        listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, text));
+                }
+            });
+        }
+
+        void onClick(ActionListener l) { this.listener = l; }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+            int w = getWidth(), h = getHeight();
+
+            Color fill = pressed ? UITheme.PRIMARY_DK
+                       : hovered ? UITheme.PRIMARY_LT
+                       : UITheme.PRIMARY;
+
+            // shadow
+            g2.setColor(new Color(80, 0, 25, 55));
+            g2.fillRoundRect(4, 6, w - 5, h - 5, 26, 26);
+
+            // body
+            g2.setColor(fill);
+            g2.fillRoundRect(0, 0, w - 3, h - 3, 24, 24);
+
+            // top shine
+            g2.setColor(new Color(255, 255, 255, 22));
+            g2.fillRoundRect(6, 3, w - 16, h / 3, 20, 20);
+
+            // gold border
+            g2.setColor(new Color(198, 155, 80, 170));
+            g2.setStroke(new BasicStroke(1.6f));
+            g2.drawRoundRect(1, 1, w - 5, h - 5, 24, 24);
+
+            // label
+            g2.setFont(new Font("Serif", Font.BOLD, 16));
+            g2.setColor(Color.WHITE);
+            FontMetrics fm = g2.getFontMetrics();
+            g2.drawString(text,
+                (w - fm.stringWidth(text)) / 2,
+                (h - fm.getHeight()) / 2 + fm.getAscent());
+
+            g2.dispose();
+        }
     }
 }

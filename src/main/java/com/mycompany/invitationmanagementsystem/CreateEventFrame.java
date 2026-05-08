@@ -12,7 +12,7 @@ public class CreateEventFrame extends JFrame {
 
     public CreateEventFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
-        setTitle("Create Wedding Event");
+        setTitle("Create Event");
         setSize(750, 550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -23,7 +23,7 @@ public class CreateEventFrame extends JFrame {
         JPanel card = UITheme.createCard(520, 420);
         card.setLayout(new BorderLayout(1, 1));
 
-        JLabel title = new JLabel("Create New Wedding Event", SwingConstants.CENTER);
+        JLabel title = new JLabel("Create New Event", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 26));
         title.setForeground(UITheme.TEXT);
 
