@@ -5,12 +5,16 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ResponsesFrame extends JFrame {
 
     DashboardFrame    dashboard;
     JComboBox<String> eventBox;
     DefaultTableModel model;
+
+    // handles loading responses safely across multiple threads
+    ThreadSafeResponseLoader responseLoader = new ThreadSafeResponseLoader();
 
     public ResponsesFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
@@ -22,7 +26,7 @@ public class ResponsesFrame extends JFrame {
         JPanel main = UITheme.createRoseBackground();
         main.setLayout(new BorderLayout());
 
-        // ── North: header + event selector
+        // North: header + event selector
         eventBox = UITheme.createComboBox("Select Event");
 
         JPanel topPanel = new JPanel(new BorderLayout(0, 8));
@@ -36,7 +40,7 @@ public class ResponsesFrame extends JFrame {
         northWrapper.add(topPanel, BorderLayout.SOUTH);
         main.add(northWrapper, BorderLayout.NORTH);
 
-        // ── Center: styled table
+        // Center: table that shows guest responses
         model = new DefaultTableModel(
                 new String[]{"Guest Name", "Email", "Response", "Guests Count"}, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
@@ -47,7 +51,7 @@ public class ResponsesFrame extends JFrame {
         scroll.setBorder(BorderFactory.createEmptyBorder(4, 24, 4, 24));
         main.add(scroll, BorderLayout.CENTER);
 
-        // ── South: buttons
+        // South: buttons
         JButton refresh = new JButton("Refresh");
         JButton back    = new JButton("Back");
         UITheme.styleButton(refresh);
@@ -98,50 +102,31 @@ public class ResponsesFrame extends JFrame {
         String selected = eventBox.getSelectedItem().toString();
         int selectedEventId = Integer.parseInt(selected.split(":")[0].trim());
 
+        // Thread 1: loads data from the database in the background
+        // so the GUI does not freeze while waiting
+        responseLoader.loadResponses(selectedEventId);
+
+        // Thread 2: waits for Thread 1 to finish, then fills the table
         new Thread(() -> {
-            System.out.println("Responses Thread Running: " + Thread.currentThread().getName());
-
-            ArrayList<Object[]> rows = new ArrayList<>();
-
             try {
-                Connection conn = DBConnection.connect();
+                // this thread sleeps here using wait()
+                // it wakes up when Thread 1 calls notifyAll()
+                List<Object[]> rows = responseLoader.waitForData();
 
-                PreparedStatement ps = conn.prepareStatement(
-                        "SELECT name, email, response, guest_count FROM guests WHERE event_id=?");
-
-                ps.setInt(1, selectedEventId);
-
-                ResultSet rs = ps.executeQuery();
-
-                while (rs.next()) {
-                    String response = rs.getString("response");
-
-                    if (response == null || response.trim().isEmpty())
-                        response = "No Response Yet";
-
-                    rows.add(new Object[]{
-                            rs.getString("name"),
-                            rs.getString("email"),
-                            response,
-                            rs.getInt("guest_count")
-                    });
-                }
-
-                conn.close();
-
+                // update the table on the main GUI thread
                 SwingUtilities.invokeLater(() -> {
                     model.setRowCount(0);
-
                     for (Object[] row : rows) {
                         model.addRow(row);
                     }
+                    System.out.println("Loaded " + responseLoader.getRowCount() + " responses");
                 });
 
             } catch (Exception e) {
                 e.printStackTrace();
-
                 SwingUtilities.invokeLater(() ->
-                        JOptionPane.showMessageDialog(this, "Error loading responses!"));
+                    JOptionPane.showMessageDialog(this, "Error loading responses!")
+                );
             }
         }).start();
     }
