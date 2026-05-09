@@ -113,9 +113,6 @@ public class ManageGuestsFrame extends JFrame {
                     ps.setInt(3, selectedEventId);
                     ps.executeUpdate();
 
-                    java.io.FileWriter fw = new java.io.FileWriter("guests.txt", true);
-                    fw.write(name.trim() + "," + email.trim().toLowerCase() + "," + selectedEventId + "\n");
-                    fw.close();
 
                     conn.close();
 

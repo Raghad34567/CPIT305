@@ -219,20 +219,13 @@ public class ThankYouFrame extends JFrame {
         cs.append("80 590 Td\n");
         appendLine(cs, "Date     :   " + eventDate);
         cs.append("0 -22 Td\n");
-        appendLine(cs, "Venue    :   " + eventLocation);
+        appendLine(cs, "Location    :   " + eventLocation);
         cs.append("ET\n");
 
         // ── Thin separator ───────────────────────────────────────────────
         cs.append("0.3 w\n");
         cs.append("0.824 0.635 0.698 RG\n");
         cs.append("80 555 m 515 555 l S\n");
-
-        // ── RSVP note ─────────────────────────────────────────────────────
-        cs.append("BT\n");
-        cs.append("/F2 11 Tf\n");
-        cs.append("0.549 0.333 0.424 rg\n");
-        appendCenteredText(cs, "Please confirm your attendance using RSVP.", 595, 535, 11);
-        cs.append("ET\n");
 
         // ── Wish line ─────────────────────────────────────────────────────
         cs.append("BT\n");

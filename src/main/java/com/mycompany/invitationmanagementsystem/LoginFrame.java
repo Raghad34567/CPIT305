@@ -66,6 +66,22 @@ public class LoginFrame extends JFrame {
                 return;
             }
 
+            // Username: 6–20 characters
+            if (usr.length() < 6 || usr.length() > 20) {
+                JOptionPane.showMessageDialog(this,
+                    "Username must be between 6 and 20 characters",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Password: 6–20 characters
+            if (pw.length() < 6 || pw.length() > 20) {
+                JOptionPane.showMessageDialog(this,
+                    "Password must be between 6 and 20 characters",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             boolean loggedIn = false;
             try {
                 Connection conn = DBConnection.connect();

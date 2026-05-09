@@ -14,14 +14,14 @@ public class CreateEventDatabase {
             Connection con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true",
                     "root",
-                    "1234"
+                    "Lturki20"
             );
 
             Statement st = con.createStatement();
-
             st.executeUpdate("CREATE DATABASE IF NOT EXISTS " + dbName);
             st.executeUpdate("USE " + dbName);
 
+            // Events table
             st.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS events (" +
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -31,6 +31,7 @@ public class CreateEventDatabase {
                     "capacity INT)"
             );
 
+            // Guests table
             st.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS guests (" +
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -41,24 +42,18 @@ public class CreateEventDatabase {
                     "guest_count INT DEFAULT 0)"
             );
 
-            if (columnExists(con, dbName, "guests", "phone") &&
-                !columnExists(con, dbName, "guests", "email")) {
-
-                st.executeUpdate("ALTER TABLE guests CHANGE phone email VARCHAR(150)");
-            }
-
+            // Add missing columns if upgrading from an older schema
             if (!columnExists(con, dbName, "guests", "email")) {
                 st.executeUpdate("ALTER TABLE guests ADD COLUMN email VARCHAR(150)");
             }
-
             if (!columnExists(con, dbName, "guests", "response")) {
                 st.executeUpdate("ALTER TABLE guests ADD COLUMN response VARCHAR(100)");
             }
-
             if (!columnExists(con, dbName, "guests", "guest_count")) {
                 st.executeUpdate("ALTER TABLE guests ADD COLUMN guest_count INT DEFAULT 0");
             }
 
+            // Organizers table
             st.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS organizers (" +
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -76,7 +71,8 @@ public class CreateEventDatabase {
         }
     }
 
-    private static boolean columnExists(Connection con, String dbName, String tableName, String columnName) {
+    private static boolean columnExists(Connection con, String dbName,
+                                        String tableName, String columnName) {
         try {
             ResultSet rs = con.getMetaData().getColumns(dbName, null, tableName, columnName);
             return rs.next();

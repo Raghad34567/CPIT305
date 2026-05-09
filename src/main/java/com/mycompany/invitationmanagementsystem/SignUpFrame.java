@@ -51,20 +51,40 @@ public class SignUpFrame extends JFrame {
             String pw  = new String(password.getPassword());
             String pw2 = new String(password2.getPassword());
 
-            // validation
+            // ── Validation ────────────────────────────────────────────────
             if (fn.isEmpty() || usr.isEmpty() || em.isEmpty() || pw.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
                     "Please fill all fields", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
+            // Username: 6–20 characters
+            if (usr.length() < 6 || usr.length() > 20) {
+                JOptionPane.showMessageDialog(this,
+                    "Username must be between 6 and 20 characters",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Email: must match a valid email pattern
+            if (!em.matches("^[\\w.+\\-]+@[a-zA-Z0-9\\-]+\\.[a-zA-Z]{2,}$")) {
+                JOptionPane.showMessageDialog(this,
+                    "Please enter a valid email address\n(e.g. example@domain.com)",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Password: 6–20 characters
+            if (pw.length() < 6 || pw.length() > 20) {
+                JOptionPane.showMessageDialog(this,
+                    "Password must be between 6 and 20 characters",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             if (!pw.equals(pw2)) {
                 JOptionPane.showMessageDialog(this,
                     "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (pw.length() < 4) {
-                JOptionPane.showMessageDialog(this,
-                    "Password must be at least 4 characters", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
