@@ -173,7 +173,9 @@ public class RSVPFrame extends JFrame {
                     // Close this resource after finishing to avoid connection problems.
                     conn.close();
 
-                    
+                    // Write this RSVP response to the log file (IOStream - FileWriter)
+                    RSVPLogger.logResponse(guestName, eventName, status, guestCount);
+
                     new ThankYouFrame(
                             status.equals("Accept with pleasure"),
                             guestName,

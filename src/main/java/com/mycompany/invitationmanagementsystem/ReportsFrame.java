@@ -88,10 +88,13 @@ public class ReportsFrame extends JFrame {
         JButton exportPdf = new JButton("Export as PDF");
         // Create a button that the user can click.
         JButton back = new JButton("Back");
+        // Button to read and display the RSVP log file
+        JButton viewLog = new JButton("View RSVP Log");
 
         UITheme.styleButton(refresh);
         UITheme.styleButton(exportPdf);
         UITheme.styleButton(back);
+        UITheme.styleButton(viewLog);
 
         // Create a panel to organize the components on the screen.
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 16, 10));
@@ -100,6 +103,7 @@ public class ReportsFrame extends JFrame {
         bottomPanel.add(refresh);
         bottomPanel.add(exportPdf);
         bottomPanel.add(back);
+        bottomPanel.add(viewLog);
 
         main.add(bottomPanel, BorderLayout.SOUTH);
         add(main);
@@ -119,6 +123,9 @@ public class ReportsFrame extends JFrame {
             // Close the current window.
             dispose();
         });
+
+        // This action reads the RSVP log file and shows it in a dialog (IOStream - FileReader)
+        viewLog.addActionListener(e -> showRsvpLog());
 
         // This action runs when the user clicks this button.
         exportPdf.addActionListener(e -> {
@@ -629,6 +636,50 @@ public class ReportsFrame extends JFrame {
     // This method handles the write part of the class logic.
     private void write(ByteArrayOutputStream buf, String s) throws IOException {
         buf.write(s.getBytes("ISO-8859-1"));
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  READ RSVP LOG FILE — demonstrates IOStream File Reading
+    // ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Reads all entries from the RSVP log file using RSVPLogger (FileReader + BufferedReader)
+     * and displays them in a scrollable dialog so the organizer can review them.
+     */
+    private void showRsvpLog() {
+        // Use RSVPLogger to read every line from the log file (IOStream File Reading)
+        java.util.List<String> lines = RSVPLogger.readAllLogs();
+
+        if (lines.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "No RSVP responses have been logged yet.\n"
+                  + "Guests must submit an RSVP response first.",
+                    "RSVP Log", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Build a scrollable text area to display the log entries
+        StringBuilder sb = new StringBuilder();
+        sb.append("RSVP Response Log  (").append(lines.size()).append(" entries)\n");
+        sb.append("File: ").append(RSVPLogger.getLogFilePath()).append("\n");
+        sb.append("─".repeat(70)).append("\n");
+        for (String line : lines) {
+            sb.append(line).append("\n");
+        }
+
+        javax.swing.JTextArea textArea = new javax.swing.JTextArea(sb.toString());
+        textArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 13));
+        textArea.setEditable(false);
+        textArea.setRows(20);
+        textArea.setColumns(65);
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new java.awt.Dimension(680, 400));
+
+        JOptionPane.showMessageDialog(this,
+                scrollPane,
+                "RSVP Log File (IOStream Read)",
+                JOptionPane.PLAIN_MESSAGE);
     }
 
     private String truncate(String s, int max) {
