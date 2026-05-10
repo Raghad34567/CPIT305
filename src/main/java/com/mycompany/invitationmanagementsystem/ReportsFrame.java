@@ -21,23 +21,29 @@ public class ReportsFrame extends JFrame {
 
     JLabel totalVal, acceptedVal, declinedVal;
 
+    // Constructor: builds the main window and prepares all GUI components.
     public ReportsFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
 
         // Set frame title
+        // Set the title that appears on the top of the window.
         setTitle("Event Reports & Statistics");
 
         // Set frame size
+        // Set the size of the window.
         setSize(900, 560);
 
         // Open frame in center of screen
+        // Show the window in the center of the screen.
         setLocationRelativeTo(null);
+        // Decide what happens when the user closes this window.
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel main = UITheme.createRoseBackground();
         main.setLayout(new BorderLayout());
 
         // North: header + event selector
+        // Create a panel to organize the components on the screen.
         JPanel northWrapper = new JPanel(new BorderLayout(0, 0));
         northWrapper.setOpaque(false);
         northWrapper.add(UITheme.createHeader("Event Reports Overview"), BorderLayout.NORTH);
@@ -47,6 +53,7 @@ public class ReportsFrame extends JFrame {
         // Show more events in the combo box list
         eventBox.setMaximumRowCount(20);
 
+        // Create a panel to organize the components on the screen.
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
         topPanel.setBorder(BorderFactory.createEmptyBorder(0, 24, 10, 24));
@@ -56,12 +63,16 @@ public class ReportsFrame extends JFrame {
         main.add(northWrapper, BorderLayout.NORTH);
 
         // Center: 3 stat cards
+        // Create a panel to organize the components on the screen.
         JPanel statsPanel = new JPanel(new GridLayout(1, 3, 30, 0));
         statsPanel.setOpaque(false);
         statsPanel.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
 
+        // Create a label to display text for the user.
         totalVal = new JLabel("—", SwingConstants.CENTER);
+        // Create a label to display text for the user.
         acceptedVal = new JLabel("—", SwingConstants.CENTER);
+        // Create a label to display text for the user.
         declinedVal = new JLabel("—", SwingConstants.CENTER);
 
         statsPanel.add(createStatCard("Total Guests", totalVal, new Color(139, 20, 60)));
@@ -71,14 +82,18 @@ public class ReportsFrame extends JFrame {
         main.add(statsPanel, BorderLayout.CENTER);
 
         // South: buttons
+        // Create a button that the user can click.
         JButton refresh = new JButton("Refresh");
+        // Create a button that the user can click.
         JButton exportPdf = new JButton("Export as PDF");
+        // Create a button that the user can click.
         JButton back = new JButton("Back");
 
         UITheme.styleButton(refresh);
         UITheme.styleButton(exportPdf);
         UITheme.styleButton(back);
 
+        // Create a panel to organize the components on the screen.
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 16, 10));
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
@@ -91,17 +106,24 @@ public class ReportsFrame extends JFrame {
 
         loadEvents();
 
+        // This action runs when the user clicks this button.
         eventBox.addActionListener(e -> loadStats());
 
+        // This action runs when the user clicks this button.
         refresh.addActionListener(e -> loadStats());
 
+        // This action runs when the user clicks this button.
         back.addActionListener(e -> {
+            // Show the selected window to the user.
             dashboard.setVisible(true);
+            // Close the current window.
             dispose();
         });
 
+        // This action runs when the user clicks this button.
         exportPdf.addActionListener(e -> {
             if (selectedEventId == -1) {
+                // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this, "Please select an event first.");
                 return;
             }
@@ -110,17 +132,21 @@ public class ReportsFrame extends JFrame {
         });
     }
 
+    // This method handles the loadEvents part of the class logic.
     private void loadEvents() {
         try {
+            // Connect to the database before running the SQL query.
             Connection conn = DBConnection.connect();
 
             Statement stmt = conn.createStatement();
 
+            // Execute an SQL query that reads data from the database.
             ResultSet rs = stmt.executeQuery(
                     "SELECT id, name FROM events ORDER BY id ASC");
 
             eventBox.removeAllItems();
 
+            // Loop through the data and process each item.
             while (rs.next()) {
                 eventBox.addItem(rs.getInt("id") + " : " + rs.getString("name"));
             }
@@ -130,16 +156,21 @@ public class ReportsFrame extends JFrame {
                 loadStats();
             }
 
+            // Close this resource after finishing to avoid connection problems.
             rs.close();
+            // Close this resource after finishing to avoid connection problems.
             stmt.close();
+            // Close this resource after finishing to avoid connection problems.
             conn.close();
 
         } catch (Exception e) {
             e.printStackTrace();
+            // Show a message box to tell the user the result.
             JOptionPane.showMessageDialog(this, "Error loading events!");
         }
     }
 
+    // This method handles the loadStats part of the class logic.
     private void loadStats() {
         if (eventBox.getSelectedItem() == null) {
             return;
@@ -149,34 +180,48 @@ public class ReportsFrame extends JFrame {
                 eventBox.getSelectedItem().toString().split(":")[0].trim());
 
         try {
+            // Connect to the database before running the SQL query.
             Connection conn = DBConnection.connect();
 
+            // Prepare the SQL statement to send it safely to the database.
             PreparedStatement ps1 = conn.prepareStatement(
                     "SELECT COUNT(*) FROM guests WHERE event_id=?");
             ps1.setInt(1, selectedEventId);
+            // Execute an SQL query that reads data from the database.
             ResultSet rs1 = ps1.executeQuery();
             int total = rs1.next() ? rs1.getInt(1) : 0;
 
+            // Prepare the SQL statement to send it safely to the database.
             PreparedStatement ps2 = conn.prepareStatement(
                     "SELECT COUNT(*) FROM guests WHERE event_id=? AND response LIKE '%Accept%'");
             ps2.setInt(1, selectedEventId);
+            // Execute an SQL query that reads data from the database.
             ResultSet rs2 = ps2.executeQuery();
             int accepted = rs2.next() ? rs2.getInt(1) : 0;
 
+            // Prepare the SQL statement to send it safely to the database.
             PreparedStatement ps3 = conn.prepareStatement(
                     "SELECT COUNT(*) FROM guests WHERE event_id=? AND response LIKE '%Decline%'");
             ps3.setInt(1, selectedEventId);
+            // Execute an SQL query that reads data from the database.
             ResultSet rs3 = ps3.executeQuery();
             int declined = rs3.next() ? rs3.getInt(1) : 0;
 
+            // Close this resource after finishing to avoid connection problems.
             rs1.close();
+            // Close this resource after finishing to avoid connection problems.
             rs2.close();
+            // Close this resource after finishing to avoid connection problems.
             rs3.close();
 
+            // Close this resource after finishing to avoid connection problems.
             ps1.close();
+            // Close this resource after finishing to avoid connection problems.
             ps2.close();
+            // Close this resource after finishing to avoid connection problems.
             ps3.close();
 
+            // Close this resource after finishing to avoid connection problems.
             conn.close();
 
             totalVal.setText(String.valueOf(total));
@@ -185,11 +230,13 @@ public class ReportsFrame extends JFrame {
 
         } catch (Exception e) {
             e.printStackTrace();
+            // Show a message box to tell the user the result.
             JOptionPane.showMessageDialog(this, "Error loading stats!");
         }
     }
 
     private JPanel createStatCard(String label, JLabel valueLabel, Color accentColor) {
+        // Create a panel to organize the components on the screen.
         JPanel card = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -216,6 +263,7 @@ public class ReportsFrame extends JFrame {
                 g2.setStroke(new BasicStroke(1.2f));
                 g2.drawRoundRect(0, 0, w - 6, h - 6, 30, 30);
 
+                // Close the current window.
                 g2.dispose();
             }
         };
@@ -224,6 +272,7 @@ public class ReportsFrame extends JFrame {
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(28, 20, 20, 20));
 
+        // Create a label to display text for the user.
         JLabel titleLbl = new JLabel(label, SwingConstants.CENTER);
         titleLbl.setFont(new Font("Serif", Font.BOLD, 18));
         titleLbl.setForeground(UITheme.TEXT);
@@ -250,11 +299,14 @@ public class ReportsFrame extends JFrame {
         java.util.List<String[]> guests = new java.util.ArrayList<>();
 
         try {
+            // Connect to the database before running the SQL query.
             Connection conn = DBConnection.connect();
 
+            // Prepare the SQL statement to send it safely to the database.
             PreparedStatement ep = conn.prepareStatement(
                     "SELECT name, date, location FROM events WHERE id=?");
             ep.setInt(1, selectedEventId);
+            // Execute an SQL query that reads data from the database.
             ResultSet er = ep.executeQuery();
 
             if (er.next()) {
@@ -263,11 +315,14 @@ public class ReportsFrame extends JFrame {
                 eventLoc = er.getString("location");
             }
 
+            // Prepare the SQL statement to send it safely to the database.
             PreparedStatement gp = conn.prepareStatement(
                     "SELECT name, response, guest_count FROM guests WHERE event_id=?");
             gp.setInt(1, selectedEventId);
+            // Execute an SQL query that reads data from the database.
             ResultSet gr = gp.executeQuery();
 
+            // Loop through the data and process each item.
             while (gr.next()) {
                 String resp = gr.getString("response");
 
@@ -282,14 +337,20 @@ public class ReportsFrame extends JFrame {
                 });
             }
 
+            // Close this resource after finishing to avoid connection problems.
             er.close();
+            // Close this resource after finishing to avoid connection problems.
             gr.close();
+            // Close this resource after finishing to avoid connection problems.
             ep.close();
+            // Close this resource after finishing to avoid connection problems.
             gp.close();
+            // Close this resource after finishing to avoid connection problems.
             conn.close();
 
         } catch (Exception ex) {
             ex.printStackTrace();
+            // Show a message box to tell the user the result.
             JOptionPane.showMessageDialog(this, "Error fetching data!");
             return;
         }
@@ -318,11 +379,14 @@ public class ReportsFrame extends JFrame {
         final String acc = acceptedVal.getText();
         final String dec = declinedVal.getText();
 
+        // Use a thread so this work can run separately from the main screen.
         new Thread(() -> {
             try {
                 writePdf(ft, fn, fd, fl, tot, acc, dec, guests);
 
+                // Run the GUI code on the Swing event thread.
                 SwingUtilities.invokeLater(() -> {
+                    // Show a message box to tell the user the result.
                     JOptionPane.showMessageDialog(this,
                             "Report saved!\n" + ft.getAbsolutePath(),
                             "Saved", JOptionPane.INFORMATION_MESSAGE);
@@ -333,7 +397,9 @@ public class ReportsFrame extends JFrame {
             } catch (Exception ex) {
                 ex.printStackTrace();
 
+                // Run the GUI code on the Swing event thread.
                 SwingUtilities.invokeLater(() -> {
+                    // Show a message box to tell the user the result.
                     JOptionPane.showMessageDialog(this,
                             "Could not save PDF:\n" + ex.getMessage(),
                             "Error", JOptionPane.ERROR_MESSAGE);
@@ -344,6 +410,7 @@ public class ReportsFrame extends JFrame {
         }).start();
     }
 
+    // This method handles the writePdf part of the class logic.
     private void writePdf(File file,
                           String evName,
                           String evDate,
@@ -418,6 +485,7 @@ public class ReportsFrame extends JFrame {
         int y = 398;
         int rowIdx = 0;
 
+        // Loop through the data and process each item.
         for (String[] row : guestList) {
             y -= 22;
 
@@ -497,6 +565,7 @@ public class ReportsFrame extends JFrame {
         StringBuilder xref = new StringBuilder();
         xref.append("xref\n0 7\n").append(String.format("%010d 65535 f \n", 0));
 
+        // Loop through the data and process each item.
         for (int i = 1; i <= 6; i++) {
             xref.append(String.format("%010d 00000 n \n", off[i]));
         }
@@ -509,6 +578,7 @@ public class ReportsFrame extends JFrame {
         Files.write(file.toPath(), buf.toByteArray());
     }
 
+    // This method handles the drawStatBox part of the class logic.
     private void drawStatBox(StringBuilder cs, int x, int y, String label, String value, String rgbColor) {
         cs.append("0.988 0.945 0.957 rg\n");
         cs.append(x).append(" ").append(y - 52).append(" 140 60 re f\n");
@@ -534,6 +604,7 @@ public class ReportsFrame extends JFrame {
         cs.append("ET\n");
     }
 
+    // This method handles the appendLine part of the class logic.
     private void appendLine(StringBuilder cs, String text) {
         String s = text == null ? "" : text
                 .replace("\\", "\\\\")
@@ -543,6 +614,7 @@ public class ReportsFrame extends JFrame {
         cs.append("(").append(s).append(") Tj\n");
     }
 
+    // This method handles the appendCentered part of the class logic.
     private void appendCentered(StringBuilder cs, String text, int pageW, int y, int fontSize) {
         int x = (int) ((pageW - text.length() * fontSize * 0.52) / 2.0);
 
@@ -554,6 +626,7 @@ public class ReportsFrame extends JFrame {
         appendLine(cs, text);
     }
 
+    // This method handles the write part of the class logic.
     private void write(ByteArrayOutputStream buf, String s) throws IOException {
         buf.write(s.getBytes("ISO-8859-1"));
     }

@@ -15,19 +15,29 @@ import java.awt.geom.*;
 
 public class UITheme {
 
+    // This method handles the Color part of the class logic.
     public static final Color PRIMARY    = new Color(139, 20,  60);
+    // This method handles the Color part of the class logic.
     public static final Color PRIMARY_LT = new Color(168, 40,  80);
+    // This method handles the Color part of the class logic.
     public static final Color PRIMARY_DK = new Color(100,  8,  38);
+    // This method handles the Color part of the class logic.
     public static final Color CARD       = new Color(255, 252, 250);
+    // This method handles the Color part of the class logic.
     public static final Color TEXT       = new Color( 55, 25,  38);
+    // This method handles the Color part of the class logic.
     public static final Color TEXT_LIGHT = new Color(140, 85, 108);
+    // This method handles the Color part of the class logic.
     public static final Color BORDER     = new Color(210, 162, 178);
+    // This method handles the Color part of the class logic.
     public static final Color GOLD       = new Color(198, 155,  80);
+    // This method handles the Color part of the class logic.
     public static Color       BACKGROUND = new Color(255, 248, 248);
 
     // ═══════════════════════════════════════════
     //  PILL BUTTON
     // ═══════════════════════════════════════════
+    // This method changes the normal button style to the project button design.
     public static void styleButton(JButton btn) {
         btn.setOpaque(false);
         btn.setContentAreaFilled(false);
@@ -60,13 +70,18 @@ public class UITheme {
                 FontMetrics fm = g2.getFontMetrics();
                 String txt = b.getText();
                 g2.drawString(txt, (w-fm.stringWidth(txt))/2, (h-fm.getHeight())/2+fm.getAscent());
+                // Close the current window.
                 g2.dispose();
             }
         });
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            // This method handles the mouseEntered part of the class logic.
             public void mouseEntered (java.awt.event.MouseEvent e) { btn.putClientProperty("hov",true);  btn.repaint(); }
+            // This method handles the mouseExited part of the class logic.
             public void mouseExited  (java.awt.event.MouseEvent e) { btn.putClientProperty("hov",false); btn.putClientProperty("prs",false); btn.repaint(); }
+            // This method handles the mousePressed part of the class logic.
             public void mousePressed (java.awt.event.MouseEvent e) { btn.putClientProperty("prs",true);  btn.repaint(); }
+            // This method handles the mouseReleased part of the class logic.
             public void mouseReleased(java.awt.event.MouseEvent e) { btn.putClientProperty("prs",false); btn.repaint(); }
         });
     }
@@ -74,7 +89,9 @@ public class UITheme {
     // ═══════════════════════════════════════════
     //  ROUNDED CARD
     // ═══════════════════════════════════════════
+    // This method creates a rounded card panel used to group page content.
     public static JPanel createCard(int w, int h) {
+        // Create a panel to organize the components on the screen.
         JPanel p = new JPanel() {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -86,6 +103,7 @@ public class UITheme {
                 g2.setColor(BORDER);
                 g2.setStroke(new BasicStroke(1.2f));
                 g2.drawRoundRect(0,0,getWidth()-6,getHeight()-6,30,30);
+                // Close the current window.
                 g2.dispose();
             }
         };
@@ -99,18 +117,23 @@ public class UITheme {
     // ═══════════════════════════════════════════
     //  STYLED INPUT FIELD
     // ═══════════════════════════════════════════
+    // This method creates a text field with the same style used in the project.
     public static JTextField createField(String label) {
+        // Create a text field so the user can type data.
         JTextField f = new JTextField();
         applyFieldStyle(f, label);
         return f;
     }
 
+    // This method creates a password field and applies the project style to it.
     public static JPasswordField createPassField(String label) {
+        // Create a password field to hide the typed password.
         JPasswordField f = new JPasswordField();
         applyFieldStyle(f, label);
         return f;
     }
 
+    // This helper method applies font, color, and border style to input fields.
     private static void applyFieldStyle(JTextField f, String label) {
         f.setFont(new Font("Serif", Font.PLAIN, 16));
         f.setForeground(TEXT);
@@ -125,16 +148,19 @@ public class UITheme {
     // ═══════════════════════════════════════════
     //  STYLED COMBOBOX
     // ═══════════════════════════════════════════
+    // This method creates/styles the combo box used for selection lists.
     public static JComboBox<String> createComboBox(String label) {
         JComboBox<String> cb = new JComboBox<>();
         styleComboBox(cb, label);
         return cb;
     }
 
+    // This method creates/styles the combo box used for selection lists.
     public static void styleComboBox(JComboBox<String> cb, String label) {
         cb.setUI(new BasicComboBoxUI() {
             @Override
             protected JButton createArrowButton() {
+                // Create a button that the user can click.
                 JButton btn = new JButton() {
                     @Override
                     protected void paintComponent(Graphics g) {
@@ -148,6 +174,7 @@ public class UITheme {
                         int[] xp = {cx - 5, cx + 5, cx};
                         int[] yp = {cy - 3, cy - 3, cy + 3};
                         g2.fillPolygon(xp, yp, 3);
+                        // Close the current window.
                         g2.dispose();
                     }
                 };
@@ -160,10 +187,12 @@ public class UITheme {
             }
 
             @Override
+            // This method handles the paintCurrentValueBackground part of the class logic.
             public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setColor(new Color(255, 248, 251));
                 g2.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+                // Close the current window.
                 g2.dispose();
             }
         });
@@ -208,6 +237,7 @@ public class UITheme {
     // ═══════════════════════════════════════════
     //  STYLED TABLE 
     // ═══════════════════════════════════════════
+    // This method styles tables so all pages have a consistent design.
     public static void styleTable(JTable table) {
         table.setFont(new Font("Serif", Font.PLAIN, 15));
         table.setForeground(TEXT);
@@ -243,6 +273,7 @@ public class UITheme {
             @Override
             public Component getTableCellRendererComponent(JTable t, Object val,
                     boolean sel, boolean foc, int row, int col) {
+                // Create a label to display text for the user.
                 JLabel lbl = new JLabel(val != null ? val.toString() : "", SwingConstants.LEFT);
                 lbl.setFont(new Font("Serif", Font.BOLD, 14));
                 lbl.setForeground(Color.WHITE);
@@ -257,6 +288,7 @@ public class UITheme {
         table.getTableHeader().setReorderingAllowed(false);
     }
 
+    // This method handles the createStyledScroll part of the class logic.
     public static JScrollPane createStyledScroll(JTable table) {
         styleTable(table);
         JScrollPane scroll = new JScrollPane(table);
@@ -274,9 +306,11 @@ public class UITheme {
                 trackColor = new Color(245, 232, 238);
             }
             @Override protected JButton createDecreaseButton(int o) {
+                // Create a button that the user can click.
                 JButton b = new JButton(); b.setPreferredSize(new Dimension(0,0)); return b;
             }
             @Override protected JButton createIncreaseButton(int o) {
+                // Create a button that the user can click.
                 JButton b = new JButton(); b.setPreferredSize(new Dimension(0,0)); return b;
             }
         });
@@ -288,12 +322,15 @@ public class UITheme {
     //  PAGE HEADER
     // ═══════════════════════════════════════════
     public static JPanel createHeader(String titleText) {
+        // Create a panel to organize the components on the screen.
         JPanel p = new JPanel(new BorderLayout(0,6));
         p.setOpaque(false);
         p.setBorder(BorderFactory.createEmptyBorder(22,0,10,0));
+        // Create a label to display text for the user.
         JLabel t = new JLabel(titleText, SwingConstants.CENTER);
         t.setFont(new Font("Serif", Font.BOLD, 28));
         t.setForeground(TEXT);
+        // Create a label to display text for the user.
         JLabel div = new JLabel("✦  ─────────────────────────────────────  ✦", SwingConstants.CENTER);
         div.setFont(new Font("Serif", Font.PLAIN, 13));
         div.setForeground(new Color(185,125,148));
@@ -306,9 +343,11 @@ public class UITheme {
     //  BUTTON BAR
     // ═══════════════════════════════════════════
     public static JPanel createButtonBar(JButton... btns) {
+        // Create a panel to organize the components on the screen.
         JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER,18,10));
         p.setOpaque(false);
         p.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
+        // Loop through the data and process each item.
         for (JButton b : btns) { styleButton(b); p.add(b); }
         return p;
     }
@@ -316,6 +355,7 @@ public class UITheme {
     // ═══════════════════════════════════════════
     //  ROSE BACKGROUND
     // ═══════════════════════════════════════════
+    // This method creates the background panel used in the application pages.
     public static JPanel createRoseBackground() {
         return new JPanel() {
             @Override protected void paintComponent(Graphics g) {
@@ -328,14 +368,19 @@ public class UITheme {
                 int[][] pos={{28,28},{W-75,18},{12,H-75},{W-68,H-75},{W/2-55,12},{W/2+38,H-68},{55,H/2-38},{W-88,H/2+18}};
                 int[]   sz ={54,48,52,46,50,48,46,52};
                 float[] al ={.28f,.22f,.25f,.20f,.24f,.22f,.20f,.26f};
+                // Loop through the data and process each item.
                 for (int i=0;i<pos.length;i++) rose(g2,pos[i][0],pos[i][1],sz[i],al[i]);
                 int[][] sm={{W/4,6},{3*W/4,H-38},{8,H/3},{W-28,2*H/3}};
+                // Loop through the data and process each item.
                 for (int[] p:sm) rose(g2,p[0],p[1],28,.15f);
+                // Close the current window.
                 g2.dispose();
             }
+            // This method handles the rose part of the class logic.
             private void rose(Graphics2D g2,int cx,int cy,int r,float a) {
                 Graphics2D g=(Graphics2D)g2.create();
                 g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,a));
+                // Loop through the data and process each item.
                 for (int i=0;i<5;i++) {
                     double ang=Math.toRadians(i*72)-Math.PI/2;
                     int px=(int)(cx+r*.55*Math.cos(ang)),py=(int)(cy+r*.55*Math.sin(ang));
@@ -343,6 +388,7 @@ public class UITheme {
                     g.setPaint(new GradientPaint(px,py,new Color(208,52,92),px+pw/2,py+ph/2,new Color(236,112,142)));
                     g.fill(AffineTransform.getRotateInstance(ang,px,py).createTransformedShape(new Ellipse2D.Double(px-pw/2.,py-ph/2.,pw,ph)));
                 }
+                // Loop through the data and process each item.
                 for (int i=0;i<5;i++) {
                     double ang=Math.toRadians(i*72);
                     int px=(int)(cx+r*.28*Math.cos(ang)),py=(int)(cy+r*.28*Math.sin(ang));
@@ -351,6 +397,7 @@ public class UITheme {
                     g.fill(AffineTransform.getRotateInstance(ang,px,py).createTransformedShape(new Ellipse2D.Double(px-pw/2.,py-ph/2.,pw,ph)));
                 }
                 int cr=(int)(r*.22); g.setColor(new Color(172,32,72)); g.fillOval(cx-cr,cy-cr,cr*2,cr*2);
+                // Close the current window.
                 g.dispose();
             }
         };

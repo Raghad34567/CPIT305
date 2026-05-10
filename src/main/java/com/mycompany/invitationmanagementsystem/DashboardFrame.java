@@ -13,19 +13,25 @@ import java.awt.event.*;
 
 public class DashboardFrame extends JFrame {
 
+    // Constructor: builds the main window and prepares all GUI components.
     public DashboardFrame() {
         // Set frame title
+        // Set the title that appears on the top of the window.
         setTitle("Dashboard");
         // Set frame size
+        // Set the size of the window.
         setSize(950, 660);
         // Open frame in center of screen
+        // Show the window in the center of the screen.
         setLocationRelativeTo(null);
+        // Decide what happens when the user closes this window.
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel main = UITheme.createRoseBackground();
         main.setLayout(new BorderLayout());
         main.add(UITheme.createHeader("Event Management Dashboard"), BorderLayout.NORTH);
 
+        // Create a panel to organize the components on the screen.
         JPanel grid = new JPanel(new GridLayout(2, 2, 28, 28));
         grid.setOpaque(false);
         grid.setBorder(BorderFactory.createEmptyBorder(18, 52, 18, 52));
@@ -42,19 +48,28 @@ public class DashboardFrame extends JFrame {
 
         main.add(grid, BorderLayout.CENTER);
 
+        // Create a button that the user can click.
         JButton logout = new JButton("Logout");
         main.add(UITheme.createButtonBar(logout), BorderLayout.SOUTH);
 
         add(main);
 
+        // Show the selected window to the user.
         createEvent.onClick(e  -> { new CreateEventFrame(this).setVisible(true);  setVisible(false); });
+        // Show the selected window to the user.
         manageGuests.onClick(e -> { new ManageGuestsFrame(this).setVisible(true); setVisible(false); });
+        // Show the selected window to the user.
         viewResponses.onClick(e -> { new ResponsesFrame(this).setVisible(true);   setVisible(false); });
+        // Show the selected window to the user.
         reports.onClick(e      -> { new ReportsFrame(this).setVisible(true);      setVisible(false); });
 
+        // This action runs when the user clicks this button.
         logout.addActionListener(e -> {
+            // Show a message box to tell the user the result.
             JOptionPane.showMessageDialog(this, "Logged out successfully");
+            // Show the selected window to the user.
             new RoleSelectionFrame().setVisible(true);
+            // Close the current window.
             dispose();
         });
     }
@@ -71,9 +86,13 @@ public class DashboardFrame extends JFrame {
             setOpaque(false);
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             addMouseListener(new MouseAdapter() {
+                // This method handles the mouseEntered part of the class logic.
                 public void mouseEntered(MouseEvent e)  { hovered = true;  repaint(); }
+                // This method handles the mouseExited part of the class logic.
                 public void mouseExited (MouseEvent e)  { hovered = false; pressed = false; repaint(); }
+                // This method handles the mousePressed part of the class logic.
                 public void mousePressed(MouseEvent e)  { pressed = true;  repaint(); }
+                // This method handles the mouseReleased part of the class logic.
                 public void mouseReleased(MouseEvent e) {
                     pressed = false; repaint();
                     if (listener != null && contains(e.getPoint()))
@@ -113,6 +132,7 @@ public class DashboardFrame extends JFrame {
             g2.drawString(text,
                 (w - fm.stringWidth(text)) / 2,
                 (h - fm.getHeight()) / 2 + fm.getAscent());
+            // Close the current window.
             g2.dispose();
         }
     }

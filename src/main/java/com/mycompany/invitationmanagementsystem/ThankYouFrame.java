@@ -20,6 +20,7 @@ public class ThankYouFrame extends JFrame {
     private final String  eventDate;
     private final String  eventLocation;
 
+    // Constructor: builds the main window and prepares all GUI components.
     public ThankYouFrame(boolean accepted,
                          String guestName,
                          String eventName,
@@ -33,11 +34,15 @@ public class ThankYouFrame extends JFrame {
         this.eventLocation = eventLocation;
 
         // Set frame title
+        // Set the title that appears on the top of the window.
         setTitle(accepted ? "Invitation Confirmed" : "Thank You");
         // Set frame size
+        // Set the size of the window.
         setSize(660, 480);
         // Open frame in center of screen
+        // Show the window in the center of the screen.
         setLocationRelativeTo(null);
+        // Decide what happens when the user closes this window.
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel main = UITheme.createRoseBackground();
@@ -47,6 +52,7 @@ public class ThankYouFrame extends JFrame {
         card.setPreferredSize(new Dimension(520, 370));
         card.setLayout(new BorderLayout());
 
+        // Create a panel to organize the components on the screen.
         JPanel top = new JPanel();
         top.setOpaque(false);
         top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
@@ -71,6 +77,7 @@ public class ThankYouFrame extends JFrame {
         top.add(Box.createVerticalStrut(6));
         top.add(sub);
 
+        // Create a panel to organize the components on the screen.
         JPanel center = new JPanel();
         center.setOpaque(false);
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
@@ -88,6 +95,7 @@ public class ThankYouFrame extends JFrame {
             center.add(wish);
         } else {
             center.add(Box.createVerticalStrut(10));
+            // Loop through the data and process each item.
             for (String msg : new String[]{
                 "We completely understand,",
                 "and we appreciate you taking the time",
@@ -99,18 +107,23 @@ public class ThankYouFrame extends JFrame {
             }
         }
 
+        // Create a panel to organize the components on the screen.
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 18, 14));
         btnPanel.setOpaque(false);
 
         if (accepted) {
+            // Create a button that the user can click.
             JButton downloadPdf = new JButton("Download Invitation as PDF");
             UITheme.styleButton(downloadPdf);
+            // This action runs when the user clicks this button.
             downloadPdf.addActionListener(e -> savePdf(downloadPdf));
             btnPanel.add(downloadPdf);
         }
 
+        // Create a button that the user can click.
         JButton close = new JButton("Close");
         UITheme.styleButton(close);
+        // This action runs when the user clicks this button.
         close.addActionListener(e -> { new RoleSelectionFrame().setVisible(true); dispose(); });
         btnPanel.add(close);
 
@@ -137,10 +150,13 @@ public class ThankYouFrame extends JFrame {
         btn.setEnabled(false);
         final File finalTarget = target;
 
+        // Use a thread so this work can run separately from the main screen.
         new Thread(() -> {
             try {
                 writePdf(finalTarget);
+                // Run the GUI code on the Swing event thread.
                 SwingUtilities.invokeLater(() -> {
+                    // Show a message box to tell the user the result.
                     JOptionPane.showMessageDialog(this,
                         "Invitation saved!\n" + finalTarget.getAbsolutePath(),
                         "Saved", JOptionPane.INFORMATION_MESSAGE);
@@ -148,7 +164,9 @@ public class ThankYouFrame extends JFrame {
                 });
             } catch (Exception ex) {
                 ex.printStackTrace();
+                // Run the GUI code on the Swing event thread.
                 SwingUtilities.invokeLater(() -> {
+                    // Show a message box to tell the user the result.
                     JOptionPane.showMessageDialog(this,
                         "Could not save PDF:\n" + ex.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -300,6 +318,7 @@ public class ThankYouFrame extends JFrame {
         // xref for objects 0-6
         StringBuilder xref = new StringBuilder();
         xref.append("xref\n0 7\n").append(String.format("%010d 65535 f \n", 0));
+        // Loop through the data and process each item.
         for (int i = 1; i <= 6; i++) xref.append(String.format("%010d 00000 n \n", off[i]));
         xref.append("trailer\n<< /Size 7 /Root 1 0 R >>\nstartxref\n")
             .append(xOff).append("\n%%EOF\n");
@@ -309,6 +328,7 @@ public class ThankYouFrame extends JFrame {
     }
 
     /** Append a simple text-show operator */
+    // This method handles the appendLine part of the class logic.
     private void appendLine(StringBuilder cs, String text) {
         cs.append("(").append(escapePdf(text)).append(") Tj\n");
     }
@@ -317,6 +337,7 @@ public class ThankYouFrame extends JFrame {
      * Approximate center-alignment: measure string width roughly
      * (each glyph ≈ fontSize * 0.55 pt for Helvetica) and offset Td.
      */
+    // This method handles the appendCenteredText part of the class logic.
     private void appendCenteredText(StringBuilder cs, String text, int pageW, int y, int fontSize) {
         double approxWidth = text.length() * fontSize * 0.52;
         int x = (int) ((pageW - approxWidth) / 2.0);
@@ -332,6 +353,7 @@ public class ThankYouFrame extends JFrame {
                 .replace(")", "\\)");
     }
 
+    // This method handles the write part of the class logic.
     private void write(ByteArrayOutputStream buf, String s) throws IOException {
         buf.write(s.getBytes("ISO-8859-1"));
     }
@@ -353,12 +375,14 @@ public class ThankYouFrame extends JFrame {
                 g2.setColor(new Color(220, 185, 110, 110));
                 g2.setStroke(new BasicStroke(0.9f));
                 g2.drawRoundRect(10, 10, w - 26, h - 26, 22, 22);
+                // Close the current window.
                 g2.dispose();
             }
         };
     }
 
     private JLabel label(String text, int style, int size, Color color) {
+        // Create a label to display text for the user.
         JLabel l = new JLabel(text, SwingConstants.CENTER);
         l.setFont(new Font("Serif", style, size));
         l.setForeground(color);
@@ -366,6 +390,7 @@ public class ThankYouFrame extends JFrame {
     }
 
     private JLabel goldDivider() {
+        // Create a label to display text for the user.
         JLabel l = new JLabel("✦  ─────────────────────────────  ✦", SwingConstants.CENTER);
         l.setFont(new Font("Serif", Font.PLAIN, 13));
         l.setForeground(new Color(198, 155, 80));
@@ -373,11 +398,14 @@ public class ThankYouFrame extends JFrame {
     }
 
     private JPanel styledRow(String lbl, String val) {
+        // Create a panel to organize the components on the screen.
         JPanel row = new JPanel(new FlowLayout(FlowLayout.CENTER, 6, 0));
         row.setOpaque(false);
+        // Create a label to display text for the user.
         JLabel k = new JLabel(lbl + " : ");
         k.setFont(new Font("Serif", Font.BOLD, 14));
         k.setForeground(UITheme.TEXT);
+        // Create a label to display text for the user.
         JLabel v = new JLabel(val);
         v.setFont(new Font("Serif", Font.PLAIN, 14));
         v.setForeground(new Color(160, 100, 40));

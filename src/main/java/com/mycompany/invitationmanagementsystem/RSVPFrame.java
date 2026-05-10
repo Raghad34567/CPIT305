@@ -21,17 +21,22 @@ public class RSVPFrame extends JFrame {
     String guestEmail;
     int eventId;
 
+    // Constructor: builds the main window and prepares all GUI components.
     public RSVPFrame(GuestInvitationFrame invitationFrame, String guestEmail, int eventId) {
         this.invitationFrame = invitationFrame;
         this.guestEmail      = cleanEmail(guestEmail);
         this.eventId         = eventId;
 
         // Set frame title
+        // Set the title that appears on the top of the window.
         setTitle("RSVP");
         // Set frame size
+        // Set the size of the window.
         setSize(700, 550);
         // Open frame in center of screen
+        // Show the window in the center of the screen.
         setLocationRelativeTo(null);
+        // Decide what happens when the user closes this window.
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel main = UITheme.createRoseBackground();
@@ -40,10 +45,12 @@ public class RSVPFrame extends JFrame {
         JPanel card = UITheme.createCard(500, 380);
         card.setLayout(new BorderLayout(20, 20));
 
+        // Create a label to display text for the user.
         JLabel title = new JLabel("Kindly Confirm Your Attendance", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 26));
         title.setForeground(UITheme.TEXT);
 
+        // Create a panel to organize the components on the screen.
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -59,6 +66,7 @@ public class RSVPFrame extends JFrame {
         gbc.gridy = 0;
         centerPanel.add(response, gbc);
 
+        // Create a text field so the user can type data.
         JTextField guests = new JTextField();
         guests.setFont(new Font("Serif", Font.PLAIN, 16));
         guests.setBorder(BorderFactory.createTitledBorder(
@@ -71,11 +79,14 @@ public class RSVPFrame extends JFrame {
         gbc.gridy = 1;
         centerPanel.add(guests, gbc);
 
+        // Create a button that the user can click.
         JButton submit = new JButton("Submit Response");
+        // Create a button that the user can click.
         JButton back   = new JButton("Back");
         UITheme.styleButton(submit);
         UITheme.styleButton(back);
 
+        // Create a panel to organize the components on the screen.
         JPanel bottomPanel = new JPanel();
         bottomPanel.setOpaque(false);
         bottomPanel.add(submit);
@@ -89,6 +100,7 @@ public class RSVPFrame extends JFrame {
         add(main);
 
         
+        // This action runs when the user clicks this button.
         response.addActionListener(e -> {
             if (response.getSelectedItem() != null &&
                 response.getSelectedItem().toString().equals("Regretfully Decline")) {
@@ -100,6 +112,7 @@ public class RSVPFrame extends JFrame {
             }
         });
 
+        // This action runs when the user clicks this button.
         submit.addActionListener(e -> {
             if (response.getSelectedItem() == null) return;
             String status     = response.getSelectedItem().toString();
@@ -110,19 +123,23 @@ public class RSVPFrame extends JFrame {
                 try {
                     guestCount = Integer.parseInt(guests.getText().trim());
                 } catch (Exception ex) {
+                    // Show a message box to tell the user the result.
                     JOptionPane.showMessageDialog(this, "Enter valid number");
                     return;
                 }
             }
 
             try {
+                // Connect to the database before running the SQL query.
                 Connection conn = DBConnection.connect();
+                // Prepare the SQL statement to send it safely to the database.
                 PreparedStatement ps = conn.prepareStatement(
                         "UPDATE guests SET response=?, guest_count=? " +
                         "WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))");
                 ps.setString(1, status);
                 ps.setInt(2, guestCount);
                 ps.setString(3, guestEmail);
+                // Execute an SQL command that changes data or creates tables.
                 int rows = ps.executeUpdate();
 
                 if (rows > 0) {
@@ -132,23 +149,28 @@ public class RSVPFrame extends JFrame {
                     String guestName     = guestEmail; // a fallback 
 
                     
+                    // Prepare the SQL statement to send it safely to the database.
                     PreparedStatement namePs = conn.prepareStatement(
                             "SELECT name FROM guests WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))");
                     namePs.setString(1, guestEmail);
+                    // Execute an SQL query that reads data from the database.
                     ResultSet nameRs = namePs.executeQuery();
                     if (nameRs.next()) {
                         guestName = nameRs.getString("name");
                     }
 
+                    // Prepare the SQL statement to send it safely to the database.
                     PreparedStatement eventPs = conn.prepareStatement(
                             "SELECT name, date, location FROM events WHERE id=?");
                     eventPs.setInt(1, eventId);
+                    // Execute an SQL query that reads data from the database.
                     ResultSet rs = eventPs.executeQuery();
                     if (rs.next()) {
                         eventName     = rs.getString("name");
                         eventDate     = rs.getString("date");
                         eventLocation = rs.getString("location");
                     }
+                    // Close this resource after finishing to avoid connection problems.
                     conn.close();
 
                     
@@ -158,21 +180,29 @@ public class RSVPFrame extends JFrame {
                             eventName,
                             eventDate,
                             eventLocation
+                    // Show the selected window to the user.
                     ).setVisible(true);
+                    // Close the current window.
                     dispose();
                 } else {
+                    // Close this resource after finishing to avoid connection problems.
                     conn.close();
+                    // Show a message box to tell the user the result.
                     JOptionPane.showMessageDialog(this,
                             "Guest not found!\nEmail used: " + guestEmail);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
+                // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this, "Database Error!");
             }
         });
 
+        // This action runs when the user clicks this button.
         back.addActionListener(e -> {
+            // Show the selected window to the user.
             invitationFrame.setVisible(true);
+            // Close the current window.
             dispose();
         });
     }

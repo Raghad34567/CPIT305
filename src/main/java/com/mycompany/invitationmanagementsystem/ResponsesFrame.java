@@ -20,19 +20,25 @@ public class ResponsesFrame extends JFrame {
     DefaultTableModel model;
 
     // handles loading responses safely across multiple threads
+    // Use a thread so this work can run separately from the main screen.
     ThreadSafeResponseLoader responseLoader = new ThreadSafeResponseLoader();
 
+    // Constructor: builds the main window and prepares all GUI components.
     public ResponsesFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
 
         // Set frame title
+        // Set the title that appears on the top of the window.
         setTitle("Guest Responses");
 
         // Set frame size
+        // Set the size of the window.
         setSize(900, 600);
 
         // Open frame in center of screen
+        // Show the window in the center of the screen.
         setLocationRelativeTo(null);
+        // Decide what happens when the user closes this window.
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel main = UITheme.createRoseBackground();
@@ -44,11 +50,13 @@ public class ResponsesFrame extends JFrame {
         // Show more events in the combo box list
         eventBox.setMaximumRowCount(20);
 
+        // Create a panel to organize the components on the screen.
         JPanel topPanel = new JPanel(new BorderLayout(0, 8));
         topPanel.setOpaque(false);
         topPanel.setBorder(BorderFactory.createEmptyBorder(0, 24, 10, 24));
         topPanel.add(eventBox, BorderLayout.CENTER);
 
+        // Create a panel to organize the components on the screen.
         JPanel northWrapper = new JPanel(new BorderLayout(0, 0));
         northWrapper.setOpaque(false);
         northWrapper.add(UITheme.createHeader("RSVP Responses"), BorderLayout.NORTH);
@@ -69,12 +77,15 @@ public class ResponsesFrame extends JFrame {
         main.add(scroll, BorderLayout.CENTER);
 
         // South: buttons
+        // Create a button that the user can click.
         JButton refresh = new JButton("Refresh");
+        // Create a button that the user can click.
         JButton back = new JButton("Back");
 
         UITheme.styleButton(refresh);
         UITheme.styleButton(back);
 
+        // Create a panel to organize the components on the screen.
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 10));
         bottom.setOpaque(false);
         bottom.setBorder(BorderFactory.createEmptyBorder(4, 0, 16, 0));
@@ -86,27 +97,36 @@ public class ResponsesFrame extends JFrame {
 
         loadEvents();
 
+        // This action runs when the user clicks this button.
         eventBox.addActionListener(e -> loadResponses());
 
+        // This action runs when the user clicks this button.
         refresh.addActionListener(e -> loadResponses());
 
+        // This action runs when the user clicks this button.
         back.addActionListener(e -> {
+            // Show the selected window to the user.
             dashboard.setVisible(true);
+            // Close the current window.
             dispose();
         });
     }
 
+    // This method handles the loadEvents part of the class logic.
     private void loadEvents() {
         try {
+            // Connect to the database before running the SQL query.
             Connection conn = DBConnection.connect();
 
             Statement stmt = conn.createStatement();
 
+            // Execute an SQL query that reads data from the database.
             ResultSet rs = stmt.executeQuery(
                     "SELECT id, name FROM events ORDER BY id ASC");
 
             eventBox.removeAllItems();
 
+            // Loop through the data and process each item.
             while (rs.next()) {
                 eventBox.addItem(rs.getInt("id") + " : " + rs.getString("name"));
             }
@@ -116,16 +136,21 @@ public class ResponsesFrame extends JFrame {
                 loadResponses();
             }
 
+            // Close this resource after finishing to avoid connection problems.
             rs.close();
+            // Close this resource after finishing to avoid connection problems.
             stmt.close();
+            // Close this resource after finishing to avoid connection problems.
             conn.close();
 
         } catch (Exception e) {
             e.printStackTrace();
+            // Show a message box to tell the user the result.
             JOptionPane.showMessageDialog(this, "Error loading events!");
         }
     }
 
+    // This method handles the loadResponses part of the class logic.
     private void loadResponses() {
         model.setRowCount(0);
 
@@ -141,6 +166,7 @@ public class ResponsesFrame extends JFrame {
         responseLoader.loadResponses(selectedEventId);
 
         // Thread 2: waits for Thread 1 to finish, then fills the table
+        // Use a thread so this work can run separately from the main screen.
         new Thread(() -> {
             try {
                 // this thread sleeps here using wait()
@@ -148,9 +174,11 @@ public class ResponsesFrame extends JFrame {
                 List<Object[]> rows = responseLoader.waitForData();
 
                 // update the table on the main GUI thread
+                // Run the GUI code on the Swing event thread.
                 SwingUtilities.invokeLater(() -> {
                     model.setRowCount(0);
 
+                    // Loop through the data and process each item.
                     for (Object[] row : rows) {
                         model.addRow(row);
                     }
@@ -161,7 +189,9 @@ public class ResponsesFrame extends JFrame {
             } catch (Exception e) {
                 e.printStackTrace();
 
+                // Run the GUI code on the Swing event thread.
                 SwingUtilities.invokeLater(() ->
+                        // Show a message box to tell the user the result.
                         JOptionPane.showMessageDialog(this, "Error loading responses!")
                 );
             }

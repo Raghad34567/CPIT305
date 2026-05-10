@@ -14,6 +14,7 @@ import java.sql.Statement;
 
 public class CreateEventDatabase {
 
+    // This method prepares the database and creates the needed tables.
     public static void setup() {
         try {
             String dbName = "invitation_db";
@@ -25,10 +26,13 @@ public class CreateEventDatabase {
             );
 
             Statement st = con.createStatement();
+            // Execute an SQL command that changes data or creates tables.
             st.executeUpdate("CREATE DATABASE IF NOT EXISTS " + dbName);
+            // Execute an SQL command that changes data or creates tables.
             st.executeUpdate("USE " + dbName);
 
             // Events table
+            // Execute an SQL command that changes data or creates tables.
             st.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS events (" +
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -39,6 +43,7 @@ public class CreateEventDatabase {
             );
 
             // Guests table
+            // Execute an SQL command that changes data or creates tables.
             st.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS guests (" +
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -51,16 +56,20 @@ public class CreateEventDatabase {
 
             // Add missing columns if upgrading from an older schema
             if (!columnExists(con, dbName, "guests", "email")) {
+                // Execute an SQL command that changes data or creates tables.
                 st.executeUpdate("ALTER TABLE guests ADD COLUMN email VARCHAR(150)");
             }
             if (!columnExists(con, dbName, "guests", "response")) {
+                // Execute an SQL command that changes data or creates tables.
                 st.executeUpdate("ALTER TABLE guests ADD COLUMN response VARCHAR(100)");
             }
             if (!columnExists(con, dbName, "guests", "guest_count")) {
+                // Execute an SQL command that changes data or creates tables.
                 st.executeUpdate("ALTER TABLE guests ADD COLUMN guest_count INT DEFAULT 0");
             }
 
             // Organizers table
+            // Execute an SQL command that changes data or creates tables.
             st.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS organizers (" +
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -71,6 +80,7 @@ public class CreateEventDatabase {
             );
 
             System.out.println("Database setup completed successfully!");
+            // Close this resource after finishing to avoid connection problems.
             con.close();
 
         } catch (Exception e) {
@@ -78,6 +88,7 @@ public class CreateEventDatabase {
         }
     }
 
+    // This helper checks if a specific column already exists in a table.
     private static boolean columnExists(Connection con, String dbName,
                                         String tableName, String columnName) {
         try {
@@ -88,6 +99,7 @@ public class CreateEventDatabase {
         }
     }
 
+    // Main method: starts this part of the program.
     public static void main(String[] args) {
         setup();
     }

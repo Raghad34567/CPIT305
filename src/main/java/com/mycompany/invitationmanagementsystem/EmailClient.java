@@ -13,9 +13,12 @@ import java.nio.charset.StandardCharsets;
 
 public class EmailClient {
 
+    // This method handles the "localhost"; part of the class logic.
     private static final String SERVER_HOST = "localhost";
+    // This method handles the 5002; part of the class logic.
     private static final int SERVER_PORT = 5002;
 
+    // This method handles the sendInvitationRequest part of the class logic.
     public static void sendInvitationRequest(String guestEmail, String guestName, String inviteLink) throws IOException {
 
         try (Socket socket = new Socket(SERVER_HOST, SERVER_PORT);

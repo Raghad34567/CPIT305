@@ -18,18 +18,26 @@ import javax.net.ssl.SSLSocketFactory;
 
 public class EmailServer {
 
+    // This method handles the 5002; part of the class logic.
     private static final int    SERVER_PORT    = 5002;
+    // This method handles the "smtp.gmail.com"; part of the class logic.
     private static final String SMTP_HOST      = "smtp.gmail.com";
+    // This method handles the 465; part of the class logic.
     private static final int    SMTP_PORT      = 465;
+    // This method handles the "invitationmanagementsystem@gmail.com"; part of the class logic.
     private static final String SENDER_EMAIL   = "invitationmanagementsystem@gmail.com";
+    // This method handles the uwov"; part of the class logic.
     private static final String SENDER_PASSWORD = "xcje knvl vknn uwov";
+    // This method handles the Executors.newFixedThreadPool part of the class logic.
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
+    // Main method: starts this part of the program.
     public static void main(String[] args) {
         System.out.println("Email Server started on port " + SERVER_PORT);
         System.out.println("Thread pool size: 10 threads");
 
         try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) {
+            // Loop through the data and process each item.
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New client connected: " + clientSocket.getInetAddress());
@@ -43,6 +51,7 @@ public class EmailServer {
         }
     }
 
+    // This method handles the handleClient part of the class logic.
     private static void handleClient(Socket clientSocket) {
         System.out.println("Handling client in thread: " + Thread.currentThread().getName());
 
@@ -88,6 +97,7 @@ public class EmailServer {
         }
     }
 
+    // This method handles the buildHtmlEmail part of the class logic.
     private static String buildHtmlEmail(String guestName, String inviteLink) {
         return "<!DOCTYPE html>\r\n"
             + "<html lang=\"en\">\r\n"
@@ -183,6 +193,7 @@ public class EmailServer {
     }
 
     
+    // This method handles the escapeHtml part of the class logic.
     private static String escapeHtml(String s) {
         if (s == null) return "";
         return s.replace("&", "&amp;")
@@ -191,6 +202,7 @@ public class EmailServer {
                 .replace("\"", "&quot;");
     }
 
+    // This method handles the sendEmail part of the class logic.
     private static void sendEmail(String receiverEmail, String subject, String htmlBody) throws Exception {
         SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         try (Socket socket = factory.createSocket(SMTP_HOST, SMTP_PORT);
@@ -222,10 +234,12 @@ public class EmailServer {
         }
     }
 
+    // This method handles the encode part of the class logic.
     private static String encode(String value) {
         return Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8));
     }
 
+    // This method handles the sendCommand part of the class logic.
     private static void sendCommand(BufferedWriter writer, BufferedReader reader, String command)
             throws IOException {
         writer.write(command + "\r\n");
@@ -233,8 +247,10 @@ public class EmailServer {
         readResponse(reader);
     }
 
+    // This method handles the readResponse part of the class logic.
     private static void readResponse(BufferedReader reader) throws IOException {
         String line;
+        // Loop through the data and process each item.
         while ((line = reader.readLine()) != null) {
             System.out.println(line);
             if (line.length() >= 4 && line.charAt(3) == ' ') break;

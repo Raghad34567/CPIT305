@@ -41,20 +41,25 @@ public class ThreadSafeResponseLoader {
         isReady = false;
         errorMessage = null;
 
+        // Use a thread so this work can run separately from the main screen.
         Thread loaderThread = new Thread(() -> {
 
             List<Object[]> tempRows = new ArrayList<>();
 
             try {
+                // Connect to the database before running the SQL query.
                 Connection conn = DBConnection.connect();
 
+                // Prepare the SQL statement to send it safely to the database.
                 PreparedStatement ps = conn.prepareStatement(
                     "SELECT name, email, response, guest_count " +
                     "FROM guests WHERE event_id = ?"
                 );
                 ps.setInt(1, eventId);
+                // Execute an SQL query that reads data from the database.
                 ResultSet rs = ps.executeQuery();
 
+                // Loop through the data and process each item.
                 while (rs.next()) {
                     String response = rs.getString("response");
                     if (response == null || response.trim().isEmpty()) {
@@ -69,6 +74,7 @@ public class ThreadSafeResponseLoader {
                     });
                 }
 
+                // Close this resource after finishing to avoid connection problems.
                 conn.close();
 
             } catch (Exception e) {
@@ -97,6 +103,7 @@ public class ThreadSafeResponseLoader {
      */
     public synchronized List<Object[]> waitForData() throws InterruptedException {
 
+        // Loop through the data and process each item.
         while (!isReady && errorMessage == null) {
             wait(); // sleep until notifyAll() is called
         }

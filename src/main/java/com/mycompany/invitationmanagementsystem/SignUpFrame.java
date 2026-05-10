@@ -13,13 +13,18 @@ import java.sql.*;
 
 public class SignUpFrame extends JFrame {
 
+    // Constructor: builds the main window and prepares all GUI components.
     public SignUpFrame() {
         // Set frame title
+        // Set the title that appears on the top of the window.
         setTitle("Create Organizer Account");
         // Set frame size
+        // Set the size of the window.
         setSize(720, 640);
         // Open frame in center of screen
+        // Show the window in the center of the screen.
         setLocationRelativeTo(null);
+        // Decide what happens when the user closes this window.
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel main = UITheme.createRoseBackground();
@@ -27,6 +32,7 @@ public class SignUpFrame extends JFrame {
 
         main.add(UITheme.createHeader("Create New Account"), BorderLayout.NORTH);
 
+        // Create a panel to organize the components on the screen.
         JPanel center = new JPanel(new GridBagLayout());
         center.setOpaque(false);
 
@@ -48,12 +54,15 @@ public class SignUpFrame extends JFrame {
         center.add(card);
         main.add(center, BorderLayout.CENTER);
 
+        // Create a button that the user can click.
         JButton signUp = new JButton("Sign Up");
+        // Create a button that the user can click.
         JButton back   = new JButton("Back to Login");
         main.add(UITheme.createButtonBar(signUp, back), BorderLayout.SOUTH);
         add(main);
 
         // Sign Up logic
+        // This action runs when the user clicks this button.
         signUp.addActionListener(e -> {
             String fn  = fullName.getText().trim();
             String usr = username.getText().trim();
@@ -63,6 +72,7 @@ public class SignUpFrame extends JFrame {
 
             // ── Validation ────────────────────────────────────────────────
             if (fn.isEmpty() || usr.isEmpty() || em.isEmpty() || pw.isEmpty()) {
+                // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this,
                     "Please fill all fields", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -70,6 +80,7 @@ public class SignUpFrame extends JFrame {
 
             // Username: 6–20 characters
             if (usr.length() < 6 || usr.length() > 20) {
+                // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this,
                     "Username must be between 6 and 20 characters",
                     "Error", JOptionPane.ERROR_MESSAGE);
@@ -78,6 +89,7 @@ public class SignUpFrame extends JFrame {
 
             // Email: must match a valid email pattern
             if (!em.matches("^[\\w.+\\-]+@[a-zA-Z0-9\\-]+\\.[a-zA-Z]{2,}$")) {
+                // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this,
                     "Please enter a valid email address\n(e.g. example@domain.com)",
                     "Error", JOptionPane.ERROR_MESSAGE);
@@ -86,6 +98,7 @@ public class SignUpFrame extends JFrame {
 
             // Password: 6–20 characters
             if (pw.length() < 6 || pw.length() > 20) {
+                // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this,
                     "Password must be between 6 and 20 characters",
                     "Error", JOptionPane.ERROR_MESSAGE);
@@ -93,26 +106,32 @@ public class SignUpFrame extends JFrame {
             }
 
             if (!pw.equals(pw2)) {
+                // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this,
                     "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             try {
+                // Connect to the database before running the SQL query.
                 Connection conn = DBConnection.connect();
 
                 // username
+                // Prepare the SQL statement to send it safely to the database.
                 PreparedStatement check = conn.prepareStatement(
                     "SELECT id FROM organizers WHERE username = ?");
                 check.setString(1, usr);
+                // Execute an SQL query that reads data from the database.
                 ResultSet rs = check.executeQuery();
                 if (rs.next()) {
+                    // Show a message box to tell the user the result.
                     JOptionPane.showMessageDialog(this,
                         "Username already taken, choose another",
                         "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
+                // Prepare the SQL statement to send it safely to the database.
                 PreparedStatement ps = conn.prepareStatement(
                     "INSERT INTO organizers(full_name, username, password, email) " +
                     "VALUES (?, ?, ?, ?)");
@@ -120,24 +139,32 @@ public class SignUpFrame extends JFrame {
                 ps.setString(2, usr);
                 ps.setString(3, pw);
                 ps.setString(4, em);
+                // Execute an SQL command that changes data or creates tables.
                 ps.executeUpdate();
 
+                // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this,
                     "Account created successfully!\nYou can now login.",
                     "Success", JOptionPane.INFORMATION_MESSAGE);
 
+                // Show the selected window to the user.
                 new LoginFrame().setVisible(true);
+                // Close the current window.
                 dispose();
 
             } catch (Exception ex) {
                 ex.printStackTrace();
+                // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this,
                     "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
+        // This action runs when the user clicks this button.
         back.addActionListener(e -> {
+            // Show the selected window to the user.
             new LoginFrame().setVisible(true);
+            // Close the current window.
             dispose();
         });
     }
