@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -16,7 +15,7 @@ import java.util.List;
 
 public class ResponsesFrame extends JFrame {
 
-    DashboardFrame    dashboard;
+    DashboardFrame dashboard;
     JComboBox<String> eventBox;
     DefaultTableModel model;
 
@@ -25,10 +24,13 @@ public class ResponsesFrame extends JFrame {
 
     public ResponsesFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
+
         // Set frame title
         setTitle("Guest Responses");
+
         // Set frame size
         setSize(900, 600);
+
         // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -38,6 +40,9 @@ public class ResponsesFrame extends JFrame {
 
         // North: header + event selector
         eventBox = UITheme.createComboBox("Select Event");
+
+        // Show more events in the combo box list
+        eventBox.setMaximumRowCount(20);
 
         JPanel topPanel = new JPanel(new BorderLayout(0, 8));
         topPanel.setOpaque(false);
@@ -53,17 +58,20 @@ public class ResponsesFrame extends JFrame {
         // Center: table that shows guest responses
         model = new DefaultTableModel(
                 new String[]{"Guest Name", "Email", "Response", "Guests Count"}, 0) {
-            public boolean isCellEditable(int r, int c) { return false; }
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
 
-        JTable table     = new JTable(model);
+        JTable table = new JTable(model);
         JScrollPane scroll = UITheme.createStyledScroll(table);
         scroll.setBorder(BorderFactory.createEmptyBorder(4, 24, 4, 24));
         main.add(scroll, BorderLayout.CENTER);
 
         // South: buttons
         JButton refresh = new JButton("Refresh");
-        JButton back    = new JButton("Back");
+        JButton back = new JButton("Back");
+
         UITheme.styleButton(refresh);
         UITheme.styleButton(back);
 
@@ -77,8 +85,11 @@ public class ResponsesFrame extends JFrame {
         add(main);
 
         loadEvents();
+
         eventBox.addActionListener(e -> loadResponses());
+
         refresh.addActionListener(e -> loadResponses());
+
         back.addActionListener(e -> {
             dashboard.setVisible(true);
             dispose();
@@ -88,16 +99,27 @@ public class ResponsesFrame extends JFrame {
     private void loadEvents() {
         try {
             Connection conn = DBConnection.connect();
-            Statement stmt  = conn.createStatement();
-            ResultSet rs    = stmt.executeQuery("SELECT id, name FROM events");
+
+            Statement stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT id, name FROM events ORDER BY id ASC");
+
             eventBox.removeAllItems();
-            while (rs.next())
+
+            while (rs.next()) {
                 eventBox.addItem(rs.getInt("id") + " : " + rs.getString("name"));
+            }
+
             if (eventBox.getItemCount() > 0) {
                 eventBox.setSelectedIndex(0);
                 loadResponses();
             }
+
+            rs.close();
+            stmt.close();
             conn.close();
+
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading events!");
@@ -107,7 +129,9 @@ public class ResponsesFrame extends JFrame {
     private void loadResponses() {
         model.setRowCount(0);
 
-        if (eventBox.getSelectedItem() == null) return;
+        if (eventBox.getSelectedItem() == null) {
+            return;
+        }
 
         String selected = eventBox.getSelectedItem().toString();
         int selectedEventId = Integer.parseInt(selected.split(":")[0].trim());
@@ -126,16 +150,19 @@ public class ResponsesFrame extends JFrame {
                 // update the table on the main GUI thread
                 SwingUtilities.invokeLater(() -> {
                     model.setRowCount(0);
+
                     for (Object[] row : rows) {
                         model.addRow(row);
                     }
+
                     System.out.println("Loaded " + responseLoader.getRowCount() + " responses");
                 });
 
             } catch (Exception e) {
                 e.printStackTrace();
+
                 SwingUtilities.invokeLater(() ->
-                    JOptionPane.showMessageDialog(this, "Error loading responses!")
+                        JOptionPane.showMessageDialog(this, "Error loading responses!")
                 );
             }
         }).start();
