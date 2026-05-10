@@ -23,6 +23,6 @@ public class InvitationManagementSystem {
 
         //open system
         // Show the selected window to the user.
-        new RoleSelectionFrame().setVisible(true);
+        new SplashFrame().setVisible(true);
     }
 }

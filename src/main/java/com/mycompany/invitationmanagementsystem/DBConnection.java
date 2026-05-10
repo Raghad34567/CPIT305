@@ -16,8 +16,8 @@ public class DBConnection {
     private static final String URL  = "jdbc:mysql://localhost:3306/invitation_db?useSSL=false&allowPublicKeyRetrieval=true";
     // This method handles the "root"; part of the class logic.
     private static final String USER = "root";
-    // This method handles the "Raghadnaif123456"; part of the class logic.
-    private static final String PASS = "Raghadnaif123456";
+    
+    private static final String PASS = "1234";
 
     // This method opens a connection with the MySQL database.
     public static Connection connect() throws DatabaseConnectionException {
