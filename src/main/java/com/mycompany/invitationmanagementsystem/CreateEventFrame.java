@@ -83,11 +83,16 @@ public class CreateEventFrame extends JFrame {
                 Connection conn = DBConnection.connect();
                 PreparedStatement ps = conn.prepareStatement(
                     "INSERT INTO events(name, date, location, capacity) VALUES (?,?,?,?)");
+
                 ps.setString(1, eventName);
                 ps.setString(2, eventDate);
                 ps.setString(3, eventLocation);
                 ps.setInt(4, Integer.parseInt(eventCapacity));
                 ps.executeUpdate();
+
+                // Close database tools after saving the event
+                ps.close();
+                conn.close();
 
                 JOptionPane.showMessageDialog(this, "Event Created & Saved!");
                 name.setText("");
