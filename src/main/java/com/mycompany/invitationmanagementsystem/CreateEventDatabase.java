@@ -22,7 +22,7 @@ public class CreateEventDatabase {
             Connection con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true",
                     "root",
-                    "1234"
+                    "Raghadnaif123456"
             );
 
             Statement st = con.createStatement();

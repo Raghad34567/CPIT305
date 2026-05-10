@@ -17,7 +17,7 @@ public class DBConnection {
     // This method handles the "root"; part of the class logic.
     private static final String USER = "root";
     
-    private static final String PASS = "1234";
+    private static final String PASS = "Raghadnaif123456";
 
     // This method opens a connection with the MySQL database.
     public static Connection connect() throws DatabaseConnectionException {
