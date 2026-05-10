@@ -4,6 +4,13 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
+/*
+ * This class sends invitation requests to the email server.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class EmailClient {
 
     private static final String SERVER_HOST = "localhost";

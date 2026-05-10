@@ -9,6 +9,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.net.ssl.SSLSocketFactory;
 
+/*
+ * This class works as the email server for sending invitation emails.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class EmailServer {
 
     private static final int    SERVER_PORT    = 5002;

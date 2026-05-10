@@ -5,6 +5,13 @@ import java.awt.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+/*
+ * This frame generates and sends invitation links to guests.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class GuestLinkFrame extends JFrame {
 
     DashboardFrame dashboard;
@@ -12,8 +19,11 @@ public class GuestLinkFrame extends JFrame {
     public GuestLinkFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
 
+        // Set frame title
         setTitle("Generate Link");
+        // Set frame size
         setSize(750, 550);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

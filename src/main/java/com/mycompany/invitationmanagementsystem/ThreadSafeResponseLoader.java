@@ -12,6 +12,13 @@ import java.util.List;
  *  - synchronized: only one thread can read or change the shared data at a time
  *  - wait/notify : a waiting thread sleeps until the data is ready, then wakes up
  */
+/*
+ * This class loads guest responses safely using threads without freezing the GUI.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class ThreadSafeResponseLoader {
 
     // shared data between threads

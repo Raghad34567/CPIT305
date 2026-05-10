@@ -4,11 +4,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 
+/*
+ * This frame allows organizers to log into the system.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class LoginFrame extends JFrame {
 
     public LoginFrame() {
+        // Set frame title
         setTitle("Organizer Login");
+        // Set frame size
         setSize(680, 560);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

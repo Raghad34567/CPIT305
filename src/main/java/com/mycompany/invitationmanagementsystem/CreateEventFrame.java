@@ -5,14 +5,24 @@ import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
+/*
+ * This frame allows organizers to create new events.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class CreateEventFrame extends JFrame {
 
     DashboardFrame dashboard;
 
     public CreateEventFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
+        // Set frame title
         setTitle("Create Event");
+        // Set frame size
         setSize(750, 550);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

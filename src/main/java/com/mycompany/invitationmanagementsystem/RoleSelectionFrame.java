@@ -3,11 +3,21 @@ package com.mycompany.invitationmanagementsystem;
 import javax.swing.*;
 import java.awt.*;
 
+/*
+ * This frame lets the user choose between organizer and guest roles.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class RoleSelectionFrame extends JFrame {
 
     public RoleSelectionFrame() {
+        // Set frame title
         setTitle("Welcome");
+        // Set frame size
         setSize(680, 480);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

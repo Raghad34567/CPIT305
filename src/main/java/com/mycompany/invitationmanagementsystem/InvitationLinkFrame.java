@@ -6,11 +6,21 @@ import java.sql.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
+/*
+ * This frame allows guests to open invitation links.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class InvitationLinkFrame extends JFrame {
 
     public InvitationLinkFrame() {
+        // Set frame title
         setTitle("Enter Invitation Link");
+        // Set frame size
         setSize(600, 420);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

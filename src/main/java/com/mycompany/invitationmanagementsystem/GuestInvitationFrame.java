@@ -6,6 +6,13 @@ import java.awt.geom.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
+/*
+ * This frame displays the invitation details for guests.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class GuestInvitationFrame extends JFrame {
 
     String invitationLink;
@@ -17,8 +24,11 @@ public class GuestInvitationFrame extends JFrame {
         this.guestEmail = extractGuestEmail(invitationLink);
         this.eventId = eventId;
 
+        // Set frame title
         setTitle("Invitation");
+        // Set frame size
         setSize(820, 700);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

@@ -4,11 +4,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/*
+ * This frame is the main dashboard for managing the system.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class DashboardFrame extends JFrame {
 
     public DashboardFrame() {
+        // Set frame title
         setTitle("Dashboard");
+        // Set frame size
         setSize(950, 660);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

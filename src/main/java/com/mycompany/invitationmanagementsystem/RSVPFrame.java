@@ -8,6 +8,13 @@ import java.sql.ResultSet;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
+/*
+ * This frame allows guests to accept or decline invitations.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class RSVPFrame extends JFrame {
 
     GuestInvitationFrame invitationFrame;
@@ -19,8 +26,11 @@ public class RSVPFrame extends JFrame {
         this.guestEmail      = cleanEmail(guestEmail);
         this.eventId         = eventId;
 
+        // Set frame title
         setTitle("RSVP");
+        // Set frame size
         setSize(700, 550);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

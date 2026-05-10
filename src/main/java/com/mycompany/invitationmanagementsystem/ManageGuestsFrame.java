@@ -6,6 +6,12 @@ import java.awt.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ManageGuestsFrame extends JFrame {
 
@@ -92,9 +98,7 @@ public class ManageGuestsFrame extends JFrame {
             String name = JOptionPane.showInputDialog(this, "Guest Name:");
             String email = JOptionPane.showInputDialog(this, "Guest Email:");
 
-            if (name == null || name.trim().isEmpty()) {
-                return;
-            }
+            if (name == null || name.trim().isEmpty()) return;
 
             if (email == null || email.trim().isEmpty() || !email.contains("@")) {
                 JOptionPane.showMessageDialog(this, "Enter valid email");
@@ -112,7 +116,6 @@ public class ManageGuestsFrame extends JFrame {
                     ps.setString(2, email.trim().toLowerCase());
                     ps.setInt(3, selectedEventId);
                     ps.executeUpdate();
-
 
                     conn.close();
 
@@ -137,7 +140,13 @@ public class ManageGuestsFrame extends JFrame {
                 return;
             }
 
-            String oldEmail = model.getValueAt(row, 1).toString();
+            Object oldEmailObj = model.getValueAt(row, 1);
+            if (oldEmailObj == null) {
+                JOptionPane.showMessageDialog(this, "This row has empty email");
+                return;
+            }
+
+            String oldEmail = oldEmailObj.toString();
 
             String newName = JOptionPane.showInputDialog(this, "Edit Name:",
                     model.getValueAt(row, 0));
@@ -145,9 +154,7 @@ public class ManageGuestsFrame extends JFrame {
             String newEmail = JOptionPane.showInputDialog(this, "Edit Email:",
                     model.getValueAt(row, 1));
 
-            if (newName == null || newName.trim().isEmpty()) {
-                return;
-            }
+            if (newName == null || newName.trim().isEmpty()) return;
 
             if (newEmail == null || newEmail.trim().isEmpty() || !newEmail.contains("@")) {
                 JOptionPane.showMessageDialog(this, "Enter valid email");
@@ -191,7 +198,13 @@ public class ManageGuestsFrame extends JFrame {
                 return;
             }
 
-            String email = model.getValueAt(row, 1).toString();
+            Object emailObj = model.getValueAt(row, 1);
+            if (emailObj == null) {
+                JOptionPane.showMessageDialog(this, "This row has empty email");
+                return;
+            }
+
+            String email = emailObj.toString();
 
             try {
                 Connection conn = DBConnection.connect();
@@ -226,40 +239,85 @@ public class ManageGuestsFrame extends JFrame {
             String eventName = getSelectedEventName();
             String encodedEventName = URLEncoder.encode(eventName, StandardCharsets.UTF_8);
 
+            List<String[]> guests = new ArrayList<>();
+
+            for (int i = 0; i < model.getRowCount(); i++) {
+                Object nameValue = model.getValueAt(i, 0);
+                Object emailValue = model.getValueAt(i, 1);
+
+                if (nameValue == null || emailValue == null) {
+                    continue;
+                }
+
+                String guestName = nameValue.toString().trim();
+                String guestEmail = emailValue.toString().trim().toLowerCase();
+
+                if (guestName.isEmpty() || guestEmail.isEmpty() || !guestEmail.contains("@")) {
+                    continue;
+                }
+
+                guests.add(new String[]{guestName, guestEmail});
+            }
+
+            if (guests.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "No valid guests found.\nPlease make sure guest name and email are not empty.");
+                return;
+            }
+
             sendInvitations.setEnabled(false);
+            sendInvitations.setText("Sending...");
 
             new Thread(() -> {
-                int sentCount = 0;
+                AtomicInteger sentCount = new AtomicInteger(0);
+                AtomicInteger failedCount = new AtomicInteger(0);
+
+                int poolSize = Math.min(5, guests.size());
+                ExecutorService threadPool = Executors.newFixedThreadPool(poolSize);
+
+                for (String[] guest : guests) {
+                    threadPool.submit(() -> {
+                        String guestName = guest[0];
+                        String guestEmail = guest[1];
+
+                        try {
+                            String encodedGuestEmail = URLEncoder.encode(guestEmail, StandardCharsets.UTF_8);
+
+                            String inviteLink = "http://www.invite.com/" + encodedEventName
+                                    + "?guestEmail=" + encodedGuestEmail;
+
+                            EmailClient.sendInvitationRequest(guestEmail, guestName, inviteLink);
+
+                            int currentSent = sentCount.incrementAndGet();
+
+                            SwingUtilities.invokeLater(() ->
+                                    sendInvitations.setText("Sent " + currentSent + " / " + guests.size()));
+
+                        } catch (Exception ex) {
+                            failedCount.incrementAndGet();
+                            ex.printStackTrace();
+                        }
+                    });
+                }
+
+                threadPool.shutdown();
 
                 try {
-                    for (int i = 0; i < model.getRowCount(); i++) {
-                        String guestName = model.getValueAt(i, 0).toString();
-                        String guestEmail = model.getValueAt(i, 1).toString().trim().toLowerCase();
-
-                        String encodedGuestEmail = URLEncoder.encode(guestEmail, StandardCharsets.UTF_8);
-
-                        String inviteLink = "http://www.invite.com/" + encodedEventName
-                                + "?guestEmail=" + encodedGuestEmail;
-
-                        EmailClient.sendInvitationRequest(guestEmail, guestName, inviteLink);
-                        sentCount++;
-                    }
-
-                    int finalCount = sentCount;
-
-                    SwingUtilities.invokeLater(() ->
-                            JOptionPane.showMessageDialog(this,
-                                    "Invitations sent successfully to " + finalCount + " guests!"));
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-
-                    SwingUtilities.invokeLater(() ->
-                            JOptionPane.showMessageDialog(this,
-                                    "Error sending invitations.\nMake sure EmailServer is running."));
-                } finally {
-                    SwingUtilities.invokeLater(() -> sendInvitations.setEnabled(true));
+                    threadPool.awaitTermination(5, TimeUnit.MINUTES);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
                 }
+
+                SwingUtilities.invokeLater(() -> {
+                    sendInvitations.setEnabled(true);
+                    sendInvitations.setText("Send Invitations");
+
+                    JOptionPane.showMessageDialog(this,
+                            "Invitation sending finished!\n"
+                                    + "Sent: " + sentCount.get() + "\n"
+                                    + "Failed: " + failedCount.get());
+                });
+
             }).start();
         });
 
@@ -315,9 +373,15 @@ public class ManageGuestsFrame extends JFrame {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+
+                if (name == null) name = "";
+                if (email == null) email = "";
+
                 model.addRow(new Object[]{
-                        rs.getString("name"),
-                        rs.getString("email")
+                        name,
+                        email
                 });
             }
 

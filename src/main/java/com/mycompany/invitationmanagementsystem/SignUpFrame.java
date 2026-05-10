@@ -4,11 +4,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 
+/*
+ * This frame allows organizers to create a new account.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class SignUpFrame extends JFrame {
 
     public SignUpFrame() {
+        // Set frame title
         setTitle("Create Organizer Account");
+        // Set frame size
         setSize(720, 640);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

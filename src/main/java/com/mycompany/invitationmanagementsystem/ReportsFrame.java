@@ -6,6 +6,13 @@ import java.io.*;
 import java.nio.file.Files;
 import java.sql.*;
 
+/*
+ * This frame shows event statistics and generates reports.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class ReportsFrame extends JFrame {
 
     DashboardFrame    dashboard;
@@ -16,8 +23,11 @@ public class ReportsFrame extends JFrame {
 
     public ReportsFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
+        // Set frame title
         setTitle("Event Reports & Statistics");
+        // Set frame size
         setSize(900, 560);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

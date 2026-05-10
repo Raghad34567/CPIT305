@@ -7,6 +7,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * This frame displays guest responses for events.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class ResponsesFrame extends JFrame {
 
     DashboardFrame    dashboard;
@@ -18,8 +25,11 @@ public class ResponsesFrame extends JFrame {
 
     public ResponsesFrame(DashboardFrame dashboard) {
         this.dashboard = dashboard;
+        // Set frame title
         setTitle("Guest Responses");
+        // Set frame size
         setSize(900, 600);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

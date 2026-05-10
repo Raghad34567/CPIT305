@@ -5,6 +5,13 @@ import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 
+/*
+ * This frame shows a thank you message after the guest responds to the invitation.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class ThankYouFrame extends JFrame {
 
     private final boolean accepted;
@@ -25,8 +32,11 @@ public class ThankYouFrame extends JFrame {
         this.eventDate     = eventDate;
         this.eventLocation = eventLocation;
 
+        // Set frame title
         setTitle(accepted ? "Invitation Confirmed" : "Thank You");
+        // Set frame size
         setSize(660, 480);
+        // Open frame in center of screen
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

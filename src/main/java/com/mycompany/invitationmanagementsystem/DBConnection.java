@@ -3,11 +3,18 @@ package com.mycompany.invitationmanagementsystem;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+/*
+ * This class handles the database connection.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class DBConnection {
 
     private static final String URL  = "jdbc:mysql://localhost:3306/invitation_db?useSSL=false&allowPublicKeyRetrieval=true";
     private static final String USER = "root";
-    private static final String PASS = "1234";
+    private static final String PASS = "Raghadnaif123456";
 
     // 
     public static Connection connect() throws DatabaseConnectionException {

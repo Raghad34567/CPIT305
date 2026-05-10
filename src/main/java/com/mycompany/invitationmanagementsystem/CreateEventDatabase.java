@@ -5,6 +5,13 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/*
+ * This class creates and sets up the database tables.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class CreateEventDatabase {
 
     public static void setup() {
@@ -14,7 +21,7 @@ public class CreateEventDatabase {
             Connection con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true",
                     "root",
-                    "1234"
+                    "Raghadnaif123456"
             );
 
             Statement st = con.createStatement();

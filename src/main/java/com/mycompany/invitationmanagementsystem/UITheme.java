@@ -6,6 +6,13 @@ import javax.swing.plaf.basic.*;
 import java.awt.*;
 import java.awt.geom.*;
 
+/*
+ * This class is responsible for styling and designing the GUI components used in the system.
+ * 
+ * This project was developed using Java Swing,
+ * MySQL database, and threading concepts.
+ */
+
 public class UITheme {
 
     public static final Color PRIMARY    = new Color(139, 20,  60);
