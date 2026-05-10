@@ -22,6 +22,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ManageGuestsFrame extends JFrame {
 
+    // Email validation pattern used in this frame.
+    private static final String EMAIL_REGEX = "^[\\w.+\\-]+@[a-zA-Z0-9\\-]+\\.[a-zA-Z]{2,}$";
+
+    private boolean isValidEmail(String email) {
+        return email != null && email.trim().matches(EMAIL_REGEX);
+    }
+
     DefaultTableModel model;
     JComboBox<String> eventBox;
     int selectedEventId = -1;
@@ -141,7 +148,7 @@ public class ManageGuestsFrame extends JFrame {
                 return;
             }
 
-            if (email == null || email.trim().isEmpty() || !email.contains("@")) {
+            if (email == null || email.trim().isEmpty() || !isValidEmail(email)) {
                 // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this, "Enter valid email");
                 return;
@@ -226,7 +233,7 @@ public class ManageGuestsFrame extends JFrame {
                 return;
             }
 
-            if (newEmail == null || newEmail.trim().isEmpty() || !newEmail.contains("@")) {
+            if (newEmail == null || newEmail.trim().isEmpty() || !isValidEmail(newEmail)) {
                 // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this, "Enter valid email");
                 return;
@@ -369,7 +376,7 @@ public class ManageGuestsFrame extends JFrame {
 
                 if (guestName.isEmpty()
                         || guestEmail.isEmpty()
-                        || !guestEmail.contains("@")) {
+                        || !isValidEmail(guestEmail)) {
                     continue;
                 }
 

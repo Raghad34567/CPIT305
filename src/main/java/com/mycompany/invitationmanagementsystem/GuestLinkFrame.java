@@ -14,6 +14,13 @@ import java.nio.charset.StandardCharsets;
 
 public class GuestLinkFrame extends JFrame {
 
+    // Email validation pattern used in this frame.
+    private static final String EMAIL_REGEX = "^[\\w.+\\-]+@[a-zA-Z0-9\\-]+\\.[a-zA-Z]{2,}$";
+
+    private boolean isValidEmail(String email) {
+        return email != null && email.trim().matches(EMAIL_REGEX);
+    }
+
     DashboardFrame dashboard;
 
     // Constructor: builds the main window and prepares all GUI components.
@@ -82,7 +89,7 @@ public class GuestLinkFrame extends JFrame {
                 return;
             }
 
-            if (guestEmail.isEmpty() || !guestEmail.contains("@")) {
+            if (guestEmail.isEmpty() || !isValidEmail(guestEmail)) {
                 // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this, "Enter valid guest email");
                 return;
