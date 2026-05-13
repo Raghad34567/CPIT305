@@ -158,7 +158,7 @@ public class ManageGuestsFrame extends JFrame {
             new Thread(() -> {
                 try {
                     // Connect to the database before running the SQL query.
-                    Connection conn = DBConnection.connect();
+                    Connection conn = DBConnection.getInstance().getConnection();
 
                     // Prepare the SQL statement to send it safely to the database.
                     PreparedStatement ps = conn.prepareStatement(
@@ -173,8 +173,7 @@ public class ManageGuestsFrame extends JFrame {
 
                     // Close this resource after finishing to avoid connection problems.
                     ps.close();
-                    // Close this resource after finishing to avoid connection problems.
-                    conn.close();
+                    // Do not close conn because it is the shared Singleton connection.
 
                     // Run the GUI code on the Swing event thread.
                     SwingUtilities.invokeLater(() -> {
@@ -244,7 +243,7 @@ public class ManageGuestsFrame extends JFrame {
 
                 try {
                     // Connect to the database before running the SQL query.
-                    Connection conn = DBConnection.connect();
+                    Connection conn = DBConnection.getInstance().getConnection();
 
                     // Prepare the SQL statement to send it safely to the database.
                     PreparedStatement ps = conn.prepareStatement(
@@ -260,8 +259,7 @@ public class ManageGuestsFrame extends JFrame {
 
                     // Close this resource after finishing to avoid connection problems.
                     ps.close();
-                    // Close this resource after finishing to avoid connection problems.
-                    conn.close();
+                    // Do not close conn because it is the shared Singleton connection.
 
                     // Run the GUI code on the Swing event thread.
                     SwingUtilities.invokeLater(() -> {
@@ -309,7 +307,7 @@ public class ManageGuestsFrame extends JFrame {
 
             try {
                 // Connect to the database before running the SQL query.
-                Connection conn = DBConnection.connect();
+                Connection conn = DBConnection.getInstance().getConnection();
 
                 // Prepare the SQL statement to send it safely to the database.
                 PreparedStatement ps = conn.prepareStatement(
@@ -323,8 +321,7 @@ public class ManageGuestsFrame extends JFrame {
 
                 // Close this resource after finishing to avoid connection problems.
                 ps.close();
-                // Close this resource after finishing to avoid connection problems.
-                conn.close();
+                // Do not close conn because it is the shared Singleton connection.
 
                 model.removeRow(row);
 
@@ -499,7 +496,7 @@ public class ManageGuestsFrame extends JFrame {
         try {
 
             // Connect to the database before running the SQL query.
-            Connection conn = DBConnection.connect();
+            Connection conn = DBConnection.getInstance().getConnection();
 
             Statement stmt = conn.createStatement();
 
@@ -530,8 +527,7 @@ public class ManageGuestsFrame extends JFrame {
             rs.close();
             // Close this resource after finishing to avoid connection problems.
             stmt.close();
-            // Close this resource after finishing to avoid connection problems.
-            conn.close();
+            // Do not close conn because it is the shared Singleton connection.
 
         } catch (Exception ex) {
 
@@ -558,7 +554,7 @@ public class ManageGuestsFrame extends JFrame {
         try {
 
             // Connect to the database before running the SQL query.
-            Connection conn = DBConnection.connect();
+            Connection conn = DBConnection.getInstance().getConnection();
 
             PreparedStatement ps =
                     // Prepare the SQL statement to send it safely to the database.
@@ -594,8 +590,7 @@ public class ManageGuestsFrame extends JFrame {
             rs.close();
             // Close this resource after finishing to avoid connection problems.
             ps.close();
-            // Close this resource after finishing to avoid connection problems.
-            conn.close();
+            // Do not close conn because it is the shared Singleton connection.
 
         } catch (Exception ex) {
 

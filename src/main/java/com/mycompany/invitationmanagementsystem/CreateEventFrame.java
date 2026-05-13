@@ -93,7 +93,7 @@ public class CreateEventFrame extends JFrame {
                 }
 
                 // Connect to the database before running the SQL query.
-                Connection conn = DBConnection.connect();
+                Connection conn = DBConnection.getInstance().getConnection();
                 // Prepare the SQL statement to send it safely to the database.
                 PreparedStatement ps = conn.prepareStatement(
                     "INSERT INTO events(name, date, location, capacity) VALUES (?,?,?,?)");
@@ -108,8 +108,7 @@ public class CreateEventFrame extends JFrame {
                 // Close database tools after saving the event
                 // Close this resource after finishing to avoid connection problems.
                 ps.close();
-                // Close this resource after finishing to avoid connection problems.
-                conn.close();
+                // Do not close conn because it is the shared Singleton connection.
 
                 // Show a message box to tell the user the result.
                 JOptionPane.showMessageDialog(this, "Event Created & Saved!");

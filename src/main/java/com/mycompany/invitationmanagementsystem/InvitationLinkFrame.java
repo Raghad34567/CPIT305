@@ -95,7 +95,7 @@ public class InvitationLinkFrame extends JFrame {
 
             try {
                 // Connect to the database before running the SQL query.
-                Connection conn = DBConnection.connect();
+                Connection conn = DBConnection.getInstance().getConnection();
 
                 if (conn == null) {
                     // Show a message box to tell the user the result.
@@ -125,8 +125,7 @@ public class InvitationLinkFrame extends JFrame {
                             "Guest not found!\nEmail used: " + guestEmail);
                 }
 
-                // Close this resource after finishing to avoid connection problems.
-                conn.close();
+                // Do not close conn because it is the shared Singleton connection.
 
             } catch (Exception ex) {
                 ex.printStackTrace();

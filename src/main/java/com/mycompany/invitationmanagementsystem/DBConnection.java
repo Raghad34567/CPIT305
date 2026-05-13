@@ -2,6 +2,7 @@ package com.mycompany.invitationmanagementsystem;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /*
  * This class handles the database connection using the Singleton Design Pattern.
@@ -26,10 +27,13 @@ public class DBConnection {
     private static final String USER = "root";
 
     // Database password.
-    private static final String PASS = "1234";
+    private static final String PASS = "Raghadnaif123456";
 
     // This is the single object of DBConnection.
     private static DBConnection instance;
+
+    // This is the shared database connection used by the whole program.
+    private Connection connection;
 
     // Private constructor: no other class can create an object using new DBConnection().
     private DBConnection() {
@@ -43,26 +47,42 @@ public class DBConnection {
         return instance;
     }
 
-    // This static method is kept so the other classes can still use DBConnection.connect().
-    public static Connection connect() throws DatabaseConnectionException {
-        return getInstance().getConnection();
-    }
-
-    // This method opens a connection with the project database.
+    // This method returns the shared Singleton connection.
     public Connection getConnection() throws DatabaseConnectionException {
         try {
-            return DriverManager.getConnection(URL, USER, PASS);
+            // If the connection was not created yet, or it was closed, create it again.
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection(URL, USER, PASS);
+            }
+            return connection;
         } catch (Exception e) {
             throw new DatabaseConnectionException("Cannot connect to database: " + e.getMessage(), e);
         }
     }
 
-    // This method opens a connection with MySQL server, used when creating the database.
+    // This static method is kept to support old code if needed.
+    public static Connection connect() throws DatabaseConnectionException {
+        return getInstance().getConnection();
+    }
+
+    // This method opens a server connection only for database setup.
+    // It is separate because it connects before the project database exists.
     public Connection getServerConnection() throws DatabaseConnectionException {
         try {
             return DriverManager.getConnection(SERVER_URL, USER, PASS);
         } catch (Exception e) {
             throw new DatabaseConnectionException("Cannot connect to MySQL server: " + e.getMessage(), e);
+        }
+    }
+
+    // Close the shared connection only when the whole program is finished.
+    public void closeConnection() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            System.out.println("Error closing database connection: " + e.getMessage());
         }
     }
 

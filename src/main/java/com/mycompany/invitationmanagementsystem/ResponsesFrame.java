@@ -116,7 +116,7 @@ public class ResponsesFrame extends JFrame {
     private void loadEvents() {
         try {
             // Connect to the database before running the SQL query.
-            Connection conn = DBConnection.connect();
+            Connection conn = DBConnection.getInstance().getConnection();
 
             Statement stmt = conn.createStatement();
 
@@ -140,8 +140,7 @@ public class ResponsesFrame extends JFrame {
             rs.close();
             // Close this resource after finishing to avoid connection problems.
             stmt.close();
-            // Close this resource after finishing to avoid connection problems.
-            conn.close();
+            // Do not close conn because it is the shared Singleton connection.
 
         } catch (Exception e) {
             e.printStackTrace();

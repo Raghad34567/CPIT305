@@ -108,7 +108,7 @@ public class GuestInvitationFrame extends JFrame {
 
         try {
             // Connect to the database before running the SQL query.
-            java.sql.Connection conn = DBConnection.connect();
+            java.sql.Connection conn = DBConnection.getInstance().getConnection();
             // Prepare the SQL statement to send it safely to the database.
             java.sql.PreparedStatement ps = conn.prepareStatement(
                     "SELECT name, date, location FROM events WHERE id = ?");
@@ -123,8 +123,7 @@ public class GuestInvitationFrame extends JFrame {
                 eventLocation = rs.getString("location");
             }
 
-            // Close this resource after finishing to avoid connection problems.
-            conn.close();
+            // Do not close conn because it is the shared Singleton connection.
 
         } catch (Exception ex) {
             ex.printStackTrace();

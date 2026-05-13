@@ -143,7 +143,7 @@ public class ReportsFrame extends JFrame {
     private void loadEvents() {
         try {
             // Connect to the database before running the SQL query.
-            Connection conn = DBConnection.connect();
+            Connection conn = DBConnection.getInstance().getConnection();
 
             Statement stmt = conn.createStatement();
 
@@ -167,8 +167,7 @@ public class ReportsFrame extends JFrame {
             rs.close();
             // Close this resource after finishing to avoid connection problems.
             stmt.close();
-            // Close this resource after finishing to avoid connection problems.
-            conn.close();
+            // Do not close conn because it is the shared Singleton connection.
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -188,7 +187,7 @@ public class ReportsFrame extends JFrame {
 
         try {
             // Connect to the database before running the SQL query.
-            Connection conn = DBConnection.connect();
+            Connection conn = DBConnection.getInstance().getConnection();
 
             // Prepare the SQL statement to send it safely to the database.
             PreparedStatement ps1 = conn.prepareStatement(
@@ -228,8 +227,7 @@ public class ReportsFrame extends JFrame {
             // Close this resource after finishing to avoid connection problems.
             ps3.close();
 
-            // Close this resource after finishing to avoid connection problems.
-            conn.close();
+            // Do not close conn because it is the shared Singleton connection.
 
             totalVal.setText(String.valueOf(total));
             acceptedVal.setText(String.valueOf(accepted));
@@ -307,7 +305,7 @@ public class ReportsFrame extends JFrame {
 
         try {
             // Connect to the database before running the SQL query.
-            Connection conn = DBConnection.connect();
+            Connection conn = DBConnection.getInstance().getConnection();
 
             // Prepare the SQL statement to send it safely to the database.
             PreparedStatement ep = conn.prepareStatement(
@@ -352,8 +350,7 @@ public class ReportsFrame extends JFrame {
             ep.close();
             // Close this resource after finishing to avoid connection problems.
             gp.close();
-            // Close this resource after finishing to avoid connection problems.
-            conn.close();
+            // Do not close conn because it is the shared Singleton connection.
 
         } catch (Exception ex) {
             ex.printStackTrace();

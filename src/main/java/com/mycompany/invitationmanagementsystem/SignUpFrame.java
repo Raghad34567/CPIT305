@@ -114,7 +114,7 @@ public class SignUpFrame extends JFrame {
 
             try {
                 // Connect to the database before running the SQL query.
-                Connection conn = DBConnection.connect();
+                Connection conn = DBConnection.getInstance().getConnection();
 
                 // username
                 // Prepare the SQL statement to send it safely to the database.

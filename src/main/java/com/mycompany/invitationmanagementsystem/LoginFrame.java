@@ -110,7 +110,7 @@ public class LoginFrame extends JFrame {
             boolean loggedIn = false;
             try {
                 // Connect to the database before running the SQL query.
-                Connection conn = DBConnection.connect();
+                Connection conn = DBConnection.getInstance().getConnection();
                 if (conn != null) {
                     // Prepare the SQL statement to send it safely to the database.
                     PreparedStatement ps = conn.prepareStatement(
