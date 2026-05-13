@@ -1,7 +1,6 @@
 package com.mycompany.invitationmanagementsystem;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -17,13 +16,10 @@ public class CreateEventDatabase {
     // This method prepares the database and creates the needed tables.
     public static void setup() {
         try {
-            String dbName = "invitation_db";
+            DBConnection db = DBConnection.getInstance();
+            String dbName = db.getDatabaseName();
 
-            Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true",
-                    "root",
-                    "1234"
-            );
+            Connection con = db.getServerConnection();
 
             Statement st = con.createStatement();
             // Execute an SQL command that changes data or creates tables.
