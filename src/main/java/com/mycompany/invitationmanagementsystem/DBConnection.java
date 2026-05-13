@@ -27,7 +27,7 @@ public class DBConnection {
     private static final String USER = "root";
 
     // Database password.
-    private static final String PASS = "Raghadnaif123456";
+    private static final String PASS = "1234";
 
     // This is the single object of DBConnection.
     private static DBConnection instance;
